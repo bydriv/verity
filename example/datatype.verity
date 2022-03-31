@@ -1,0 +1,25 @@
+struct t := {
+  x : int,
+  y? : int
+}
+
+def record_value1 := t { x := 10 }
+def record_value2 := t { x := 10, y := 20 }
+
+def record_parameter(t {x, y ? 0}) := (x, y)
+def record_result1 := record_parameter record_value1
+def record_result2 := record_parameter record_value2
+
+def record_access_x(v) := t.x v
+def record_access_y_with_default_value(v) := t.y(v, 0)
+
+struct u := [ foo | bar of string ]
+
+def variant_value1 := u.foo
+def variant_value2 := u.bar "bar"
+
+def variant_match(v) :=
+  u.match v with
+    foo => "foo"
+  | bar x => x
+  end

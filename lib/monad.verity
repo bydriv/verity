@@ -1,0 +1,4 @@
+struct Monad(m : type -> type) := {
+  return : forall a. a -> m a,
+  bind : forall (a, b). m a -> (a -> m b) -> m b
+}

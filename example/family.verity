@@ -1,0 +1,23 @@
+struct T(t) := {
+  state : t,
+  next : t -> t
+}
+
+family X <: exists t. T(t) := family
+  def int := T {
+    state := 0,
+    next := ^x. x + 1
+  }
+
+  def rational := T {
+    state := 0.0,
+    next := ^x. Rational.+(x, 1.0)
+  }
+
+  def int_string_pair := T {
+    state := (0, ""),
+    next := ^(i, s). (i + 1, s)
+  }
+end
+
+def x_array : array X := [X::int, X::rational, X::int_string_pair]

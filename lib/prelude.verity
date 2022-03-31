@@ -1,0 +1,54 @@
+type bool := prim.bool
+type int := prim.int
+type rational := prim.rational
+type array := prim.array
+type string := prim.string
+type binary := prim.binary
+
+family Int := family
+  def x == y := prim.Int.==(x, y)
+  def x != y := prim.Int.!=(x, y)
+  def x <= y := prim.Int.<=(x, y)
+  def x < y := prim.Int.<(x, y)
+  def x >= y := prim.Int.>=(x, y)
+  def x > y := prim.Int.>(x, y)
+  def x + y := prim.Int.+(x, y)
+  def x - y := prim.Int.-(x, y)
+  def x * y := prim.Int.*(x, y)
+  def x / y := prim.Int./(x, y)
+  def x % y := prim.Int.%(x, y)
+end
+
+family Rational := family
+  def x == y := prim.Rational.==(x, y)
+  def x != y := prim.Rational.!=(x, y)
+  def x <= y := prim.Rational.<=(x, y)
+  def x < y := prim.Rational.<(x, y)
+  def x >= y := prim.Rational.>=(x, y)
+  def x > y := prim.Rational.>(x, y)
+  def x + y := prim.Rational.+(x, y)
+  def x - y := prim.Rational.-(x, y)
+  def x * y := prim.Rational.*(x, y)
+  def x / y := prim.Rational./(x, y)
+  def x % y := prim.Rational.%(x, y)
+end
+
+def x == y := Int.==(x, y)
+def x != y := Int.!=(x, y)
+def x <= y := Int.<=(x, y)
+def x < y := Int.<(x, y)
+def x >= y := Int.>=(x, y)
+def x > y := Int.>(x, y)
+def x + y := Int.+(x, y)
+def x - y := Int.-(x, y)
+def x * y := Int.*(x, y)
+def x / y := Int./(x, y)
+def x % y := Int.%(x, y)
+
+family stdout := family
+  def puts := prim.stdout.puts
+end
+
+family stderr := family
+  def puts := prim.stderr.puts
+end

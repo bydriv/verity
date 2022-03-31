@@ -1,0 +1,13 @@
+[package]
+name = "verity"
+version = "0.1.0"
+
+[[bin]]
+name = "verity"
+
+[dependencies]
+rustyline = "9.1.0"
+verity_definition = { path = "../verity_definition" }
+verity_syntax = { path = "../verity_syntax" }
+verity_static_semantics = { path = "../verity_static_semantics" }
+verity_dynamic_semantics = { path = "../verity_dynamic_semantics" }

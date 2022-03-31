@@ -1,0 +1,38 @@
+family list := family
+  inductive node(a) := [ nil | cons of a * node(a) ]
+  struct t(a) := { length : int, head : node(a) }
+
+  def is_empty[a](xs : t(a)) : bool :=
+    node.match t.head xs with
+      nil =>
+        true
+    | cons(_x, _xs) =>
+        false
+    end
+
+  def from_array[a](elements : array(a)) : t(a)! :=
+    let i := &0 in
+    let xs := &node.nil in
+    for x in elements do
+      xs := node.cons(x, *xs); i := *i + 1
+    end; t { length := *i, head := *xs }
+
+  def tabulate[a](n : int, f : int -> a) : t(a)! :=
+    let xs := &node.nil in
+    for i in 0..n do
+      xs := node.cons(f(i), *xs)
+    end; t { length := n, head := *xs }
+
+  def foldr[a, b](f : a * b -> b, y : b, xs : t(a)) : b! :=
+    let n := t.length xs in
+    let y := &y in
+    let xs := &t.head xs in
+    for i in 0..n do
+      node.match *xs with
+        nil =>
+          false
+      | cons(x, xs1) =>
+          y := f(x, *y); xs := xs1
+      end
+    end; *y
+end

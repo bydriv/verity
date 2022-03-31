@@ -1,0 +1,10 @@
+[package]
+name = "verity_syntax"
+version = "0.1.0"
+
+[build-dependencies]
+lalrpop = "0.19.7"
+
+[dependencies]
+lalrpop-util = "0.19.7"
+verity_definition = { path = "../verity_definition" }

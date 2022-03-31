@@ -1,0 +1,2 @@
+[workspace]
+members = ["workspace/verity", "workspace/verity_definition", "workspace/verity_syntax", "workspace/verity_static_semantics", "workspace/verity_dynamic_semantics"]

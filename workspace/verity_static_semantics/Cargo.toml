@@ -1,0 +1,7 @@
+[package]
+name = "verity_static_semantics"
+version = "0.1.0"
+
+[dependencies]
+rand = "0.8.5"
+verity_definition = { path = "../verity_definition" }

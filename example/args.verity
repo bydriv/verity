@@ -1,0 +1,4 @@
+def main(args) :=
+  for arg in args do
+    stdout.puts arg
+  end

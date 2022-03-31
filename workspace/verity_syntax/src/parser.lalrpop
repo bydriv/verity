@@ -1,0 +1,782 @@
+use definition::common::*;
+use definition::syntax::*;
+
+grammar;
+
+QualifiedIdentifier: Constituent<QualifiedIdentifier> = {
+    <identifier:Lexeme<IDENTIFIER>> => {
+        Constituent::new(identifier.location(), QualifiedIdentifier::Identifier {<>})
+    },
+    <qualified_identifier:QualifiedIdentifier> <dot:Lexeme<DOT>> <identifier:Lexeme<IDENTIFIER>> => {
+        Constituent::new((qualified_identifier.location().0, identifier.location().1), QualifiedIdentifier::Dot {<>})
+    },
+};
+
+AtomicKindExpression: Constituent<AtomicKindExpression> = {
+    <type_:Lexeme<TYPE>> => {
+        Constituent::new(type_.location(), AtomicKindExpression::Type {<>})
+    },
+    <plus:Lexeme<PLUS>> <type_:Lexeme<TYPE>> => {
+        Constituent::new((plus.location().0, type_.location().1), AtomicKindExpression::PositiveType {<>})
+    },
+    <minus:Lexeme<MINUS>> <type_:Lexeme<TYPE>> => {
+        Constituent::new((minus.location().0, type_.location().1), AtomicKindExpression::NegativeType {<>})
+    },
+    <lparen:Lexeme<LPAREN>> <kind_expression:KindExpression> <rparen:Lexeme<RPAREN>> => {
+        Constituent::new((lparen.location().0, rparen.location().1), AtomicKindExpression::Prec {<>})
+    },
+};
+
+MultiplicativeKindExpression: Constituent<MultiplicativeKindExpression> = {
+    <atomic_kind_expression:AtomicKindExpression> => {
+        Constituent::new(atomic_kind_expression.location(), MultiplicativeKindExpression::AtomicKindExpression {<>})
+    },
+    <atomic_kind_expression:AtomicKindExpression> <asterisk:Lexeme<ASTERISK>> <multiplicative_kind_expression:MultiplicativeKindExpression> => {
+        Constituent::new((atomic_kind_expression.location().0, multiplicative_kind_expression.location().1), MultiplicativeKindExpression::Asterisk {<>})
+    },
+};
+
+KindExpression: Constituent<KindExpression> = {
+    <multiplicative_kind_expression:MultiplicativeKindExpression> => {
+        Constituent::new(multiplicative_kind_expression.location(), KindExpression::MultiplicativeKindExpression {<>})
+    },
+    <multiplicative_kind_expression:MultiplicativeKindExpression> <arrow:Lexeme<ARROW>> <kind_expression:KindExpression> => {
+        Constituent::new((multiplicative_kind_expression.location().0, kind_expression.location().1), KindExpression::Arrow {<>})
+    },
+};
+
+AtomicTypeParameter: Constituent<AtomicTypeParameter> = {
+    <identifier:Lexeme<IDENTIFIER>> => {
+        Constituent::new(identifier.location(), AtomicTypeParameter::Identifier {<>})
+    },
+    <lparen:Lexeme<LPAREN>> <type_parameters:TypeParameters> <rparen:Lexeme<RPAREN>> => {
+        Constituent::new((lparen.location().0, rparen.location().1), AtomicTypeParameter::Tuple {<>})
+    },
+}
+
+TypeParameter: Constituent<TypeParameter> = {
+    <atomic_type_parameter:AtomicTypeParameter> => {
+        Constituent::new(atomic_type_parameter.location(), TypeParameter::AtomicTypeParameter {<>})
+    },
+    <identifier:Lexeme<IDENTIFIER>> <colon:Lexeme<COLON>> <kind_expression:KindExpression> => {
+        Constituent::new((identifier.location().0, kind_expression.location().1), TypeParameter::Colon {<>})
+    },
+};
+
+TypeParameters: Constituent<TypeParameters> = {
+    <type_parameter:TypeParameter> => {
+        Constituent::new(type_parameter.location(), TypeParameters::One {<>})
+    },
+    <type_parameter:TypeParameter> <comma:Lexeme<COMMA>> <type_parameters:TypeParameters> => {
+        Constituent::new((type_parameter.location().0, type_parameters.location().1), TypeParameters::More {<>})
+    },
+};
+
+TypeMember: Constituent<TypeMember> = {
+    <identifier:Lexeme<IDENTIFIER>> <colon:Lexeme<COLON>> <type_expression:TypeExpression> => {
+        Constituent::new((identifier.location().0, type_expression.location().1), TypeMember::Required {<>})
+    },
+    <identifier:Lexeme<IDENTIFIER>> <question:Lexeme<QUESTION>> <colon:Lexeme<COLON>> <type_expression:TypeExpression> => {
+        Constituent::new((identifier.location().0, type_expression.location().1), TypeMember::Optional {<>})
+    },
+};
+
+TypeMembers: Constituent<TypeMembers> = {
+    <type_member:TypeMember> => {
+        Constituent::new(type_member.location(), TypeMembers::One {<>})
+    },
+    <type_member:TypeMember> <comma:Lexeme<COMMA>> <type_members:TypeMembers> => {
+        Constituent::new((type_member.location().0, type_members.location().1), TypeMembers::More {<>})
+    },
+};
+
+RecordExpression: Constituent<RecordExpression> = {
+    <lbrace:Lexeme<LBRACE>> <rbrace:Lexeme<RBRACE>> => {
+        Constituent::new((lbrace.location().0, rbrace.location().1), RecordExpression::Empty {<>})
+    },
+    <lbrace:Lexeme<LBRACE>> <type_members:TypeMembers> <rbrace:Lexeme<RBRACE>> => {
+        Constituent::new((lbrace.location().0, rbrace.location().1), RecordExpression::NonEmpty {<>})
+    },
+};
+
+TypeVariant: Constituent<TypeVariant> = {
+    <identifier:Lexeme<IDENTIFIER>> => {
+        Constituent::new(identifier.location(), TypeVariant::Identifier {<>})
+    },
+    <identifier:Lexeme<IDENTIFIER>> <of:Lexeme<OF>> <type_expression:TypeExpression> => {
+        Constituent::new((identifier.location().0, type_expression.location().1), TypeVariant::Of {<>})
+    },
+};
+
+TypeVariants: Constituent<TypeVariants> = {
+    <type_variant:TypeVariant> => {
+        Constituent::new(type_variant.location(), TypeVariants::One {<>})
+    },
+    <type_variant:TypeVariant> <pipe:Lexeme<PIPE>> <type_variants:TypeVariants> => {
+        Constituent::new((type_variant.location().0, type_variants.location().1), TypeVariants::More {<>})
+    },
+};
+
+VariantExpression: Constituent<VariantExpression> = {
+    <lbracket:Lexeme<LBRACKET>> <rbracket:Lexeme<RBRACKET>> => {
+        Constituent::new((lbracket.location().0, rbracket.location().1), VariantExpression::Empty {<>})
+    },
+    <lbracket:Lexeme<LBRACKET>> <type_variants:TypeVariants> <rbracket:Lexeme<RBRACKET>> => {
+        Constituent::new((lbracket.location().0, rbracket.location().1), VariantExpression::NonEmpty {<>})
+    },
+};
+
+StructureExpression: Constituent<StructureExpression> = {
+    <record_expression:RecordExpression> => {
+        Constituent::new(record_expression.location(), StructureExpression::RecordExpression {<>})
+    },
+    <variant_expression:VariantExpression> => {
+        Constituent::new(variant_expression.location(), StructureExpression::VariantExpression {<>})
+    },
+};
+
+AtomicTypeExpression: Constituent<AtomicTypeExpression> = {
+    <qualified_identifier:QualifiedIdentifier> => {
+        Constituent::new(qualified_identifier.location(), AtomicTypeExpression::QualifiedIdentifier {<>})
+    },
+    <lparen:Lexeme<LPAREN>> <type_expressions:TypeExpressions> <rparen:Lexeme<RPAREN>> => {
+        Constituent::new((lparen.location().0, rparen.location().1), AtomicTypeExpression::Tuple {<>})
+    },
+};
+
+ApplicativeTypeExpression: Constituent<ApplicativeTypeExpression> = {
+    <atomic_type_expression:AtomicTypeExpression> => {
+        Constituent::new(atomic_type_expression.location(), ApplicativeTypeExpression::AtomicTypeExpression {<>})
+    },
+    <applicative_type_expression:ApplicativeTypeExpression> <atomic_type_expression:AtomicTypeExpression> => {
+        Constituent::new((applicative_type_expression.location().0, atomic_type_expression.location().1), ApplicativeTypeExpression::Apply {<>})
+    },
+};
+
+ReferenceTypeExpression: Constituent<ReferenceTypeExpression> = {
+    <applicative_type_expression:ApplicativeTypeExpression> => {
+        Constituent::new(applicative_type_expression.location(), ReferenceTypeExpression::ApplicativeTypeExpression {<>})
+    },
+    <amp:Lexeme<AMP>> <reference_type_expression:ReferenceTypeExpression> => {
+        Constituent::new((amp.location().0, reference_type_expression.location().1), ReferenceTypeExpression::Amp {<>})
+    },
+};
+
+EffectiveTypeExpression: Constituent<EffectiveTypeExpression> = {
+    <reference_type_expression:ReferenceTypeExpression> => {
+        Constituent::new(reference_type_expression.location(), EffectiveTypeExpression::ReferenceTypeExpression {<>})
+    },
+    <effective_type_expression:EffectiveTypeExpression> <exclamation:Lexeme<EXCLAMATION>> => {
+        Constituent::new((effective_type_expression.location().0, exclamation.location().1), EffectiveTypeExpression::Exclamation {<>})
+    },
+};
+
+MultiplicativeTypeExpression: Constituent<MultiplicativeTypeExpression> = {
+    <effective_type_expression:EffectiveTypeExpression> => {
+        Constituent::new(effective_type_expression.location(), MultiplicativeTypeExpression::EffectiveTypeExpression {<>})
+    },
+    <effective_type_expression:EffectiveTypeExpression> <asterisk:Lexeme<ASTERISK>> <multiplicative_type_expression:MultiplicativeTypeExpression> => {
+        Constituent::new((effective_type_expression.location().0, multiplicative_type_expression.location().1), MultiplicativeTypeExpression::Asterisk {<>})
+    },
+};
+
+TypeExpression: Constituent<TypeExpression> = {
+    <multiplicative_type_expression:MultiplicativeTypeExpression> => {
+        Constituent::new(multiplicative_type_expression.location(), TypeExpression::MultiplicativeTypeExpression {<>})
+    },
+    <multiplicative_type_expression:MultiplicativeTypeExpression> <arrow:Lexeme<ARROW>> <type_expression:TypeExpression> => {
+        Constituent::new((multiplicative_type_expression.location().0, type_expression.location().1), TypeExpression::Arrow {<>})
+    },
+    <hat:Lexeme<HAT>> <atomic_type_parameter:AtomicTypeParameter> <dot:Lexeme<DOT>> <type_expression:TypeExpression> => {
+        Constituent::new((hat.location().0, type_expression.location().1), TypeExpression::Abstraction {<>})
+    },
+    <forall:Lexeme<FORALL>> <atomic_type_parameter:AtomicTypeParameter> <dot:Lexeme<DOT>> <type_expression:TypeExpression> => {
+        Constituent::new((forall.location().0, type_expression.location().1), TypeExpression::Forall {<>})
+    },
+    <exists:Lexeme<EXISTS>> <atomic_type_parameter:AtomicTypeParameter> <dot:Lexeme<DOT>> <type_expression:TypeExpression> => {
+        Constituent::new((exists.location().0, type_expression.location().1), TypeExpression::Exists {<>})
+    },
+};
+
+TypeExpressions: Constituent<TypeExpressions> = {
+    <type_expression:TypeExpression> => {
+        Constituent::new(type_expression.location(), TypeExpressions::One {<>})
+    },
+    <type_expression:TypeExpression> <comma:Lexeme<COMMA>> <type_expressions:TypeExpressions> => {
+        Constituent::new((type_expression.location().0, type_expressions.location().1), TypeExpressions::More {<>})
+    },
+};
+
+TypeDefinition: Constituent<TypeDefinition> = {
+    <type_:Lexeme<TYPE>> <identifier:Lexeme<IDENTIFIER>> <coloneq:Lexeme<COLONEQ>> <type_expression:TypeExpression> => {
+        Constituent::new((type_.location().0, type_expression.location().1), TypeDefinition::Type {<>})
+    },
+    <type_:Lexeme<TYPE>> <identifier:Lexeme<IDENTIFIER>> <colon:Lexeme<COLON>> <kind_expression:KindExpression> <coloneq:Lexeme<COLONEQ>> <type_expression:TypeExpression> => {
+        Constituent::new((type_.location().0, type_expression.location().1), TypeDefinition::TypeColon {<>})
+    },
+    <type_:Lexeme<TYPE>> <identifier:Lexeme<IDENTIFIER>> <lparen:Lexeme<LPAREN>> <type_parameters:TypeParameters> <rparen:Lexeme<RPAREN>> <coloneq:Lexeme<COLONEQ>> <type_expression:TypeExpression> => {
+        Constituent::new((type_.location().0, type_expression.location().1), TypeDefinition::TypeFn {<>})
+    },
+    <type_:Lexeme<TYPE>> <identifier:Lexeme<IDENTIFIER>> <lparen:Lexeme<LPAREN>> <type_parameters:TypeParameters> <rparen:Lexeme<RPAREN>> <colon:Lexeme<COLON>> <kind_expression:KindExpression> <coloneq:Lexeme<COLONEQ>> <type_expression:TypeExpression> => {
+        Constituent::new((type_.location().0, type_expression.location().1), TypeDefinition::TypeFnColon {<>})
+    },
+    <struct_:Lexeme<STRUCT>> <identifier:Lexeme<IDENTIFIER>> <coloneq:Lexeme<COLONEQ>> <structure_expression:StructureExpression> => {
+        Constituent::new((struct_.location().0, structure_expression.location().1), TypeDefinition::Struct {<>})
+    },
+    <struct_:Lexeme<STRUCT>> <identifier:Lexeme<IDENTIFIER>> <colon:Lexeme<COLON>> <kind_expression:KindExpression> <coloneq:Lexeme<COLONEQ>> <structure_expression:StructureExpression> => {
+        Constituent::new((struct_.location().0, structure_expression.location().1), TypeDefinition::StructColon {<>})
+    },
+    <struct_:Lexeme<STRUCT>> <identifier:Lexeme<IDENTIFIER>> <lparen:Lexeme<LPAREN>> <type_parameters:TypeParameters> <rparen:Lexeme<RPAREN>> <coloneq:Lexeme<COLONEQ>> <structure_expression:StructureExpression> => {
+        Constituent::new((struct_.location().0, structure_expression.location().1), TypeDefinition::StructFn {<>})
+    },
+    <struct_:Lexeme<STRUCT>> <identifier:Lexeme<IDENTIFIER>> <lparen:Lexeme<LPAREN>> <type_parameters:TypeParameters> <rparen:Lexeme<RPAREN>> <colon:Lexeme<COLON>> <kind_expression:KindExpression> <coloneq:Lexeme<COLONEQ>> <structure_expression:StructureExpression> => {
+        Constituent::new((struct_.location().0, structure_expression.location().1), TypeDefinition::StructFnColon {<>})
+    },
+    <inductive:Lexeme<INDUCTIVE>> <identifier:Lexeme<IDENTIFIER>> <coloneq:Lexeme<COLONEQ>> <structure_expression:StructureExpression> => {
+        Constituent::new((inductive.location().0, structure_expression.location().1), TypeDefinition::Inductive {<>})
+    },
+    <inductive:Lexeme<INDUCTIVE>> <identifier:Lexeme<IDENTIFIER>> <colon:Lexeme<COLON>> <kind_expression:KindExpression> <coloneq:Lexeme<COLONEQ>> <structure_expression:StructureExpression> => {
+        Constituent::new((inductive.location().0, structure_expression.location().1), TypeDefinition::InductiveColon {<>})
+    },
+    <inductive:Lexeme<INDUCTIVE>> <identifier:Lexeme<IDENTIFIER>> <lparen:Lexeme<LPAREN>> <type_parameters:TypeParameters> <rparen:Lexeme<RPAREN>> <coloneq:Lexeme<COLONEQ>> <structure_expression:StructureExpression> => {
+        Constituent::new((inductive.location().0, structure_expression.location().1), TypeDefinition::InductiveFn {<>})
+    },
+    <inductive:Lexeme<INDUCTIVE>> <identifier:Lexeme<IDENTIFIER>> <lparen:Lexeme<LPAREN>> <type_parameters:TypeParameters> <rparen:Lexeme<RPAREN>> <colon:Lexeme<COLON>> <kind_expression:KindExpression> <coloneq:Lexeme<COLONEQ>> <structure_expression:StructureExpression> => {
+        Constituent::new((inductive.location().0, structure_expression.location().1), TypeDefinition::InductiveFnColon {<>})
+    },
+};
+
+ValueParameterMember: Constituent<ValueParameterMember> = {
+    <identifier:Lexeme<IDENTIFIER>> => {
+        Constituent::new(identifier.location(), ValueParameterMember::Identifier {<>})
+    },
+    <identifier:Lexeme<IDENTIFIER>> <question:Lexeme<QUESTION>> <value_expression:ValueExpression> => {
+        Constituent::new((identifier.location().0, value_expression.location().1), ValueParameterMember::Default {<>})
+    },
+    <identifier:Lexeme<IDENTIFIER>> <question:Lexeme<QUESTION>> <value_expression1:ValueExpression> <colon:Lexeme<COLON>> <value_expression2:ValueExpression> => {
+        Constituent::new((identifier.location().0, value_expression2.location().1), ValueParameterMember::DefaultMap {<>})
+    },
+    <identifier:Lexeme<IDENTIFIER>> <colon:Lexeme<COLON>> <type_expression:TypeExpression> => {
+        Constituent::new((identifier.location().0, type_expression.location().1), ValueParameterMember::Colon {<>})
+    },
+    <identifier:Lexeme<IDENTIFIER>> <colon:Lexeme<COLON>> <type_expression:TypeExpression> <question:Lexeme<QUESTION>> <value_expression:ValueExpression> => {
+        Constituent::new((identifier.location().0, value_expression.location().1), ValueParameterMember::ColonDefault {<>})
+    },
+    <identifier:Lexeme<IDENTIFIER>> <colon1:Lexeme<COLON>> <type_expression:TypeExpression> <question:Lexeme<QUESTION>> <value_expression1:ValueExpression> <colon2:Lexeme<COLON>> <value_expression2:ValueExpression> => {
+        Constituent::new((identifier.location().0, value_expression2.location().1), ValueParameterMember::ColonDefaultMap {<>})
+    },
+};
+
+ValueParameterMembers: Constituent<ValueParameterMembers> = {
+    <value_parameter_member:ValueParameterMember> => {
+        Constituent::new(value_parameter_member.location(), ValueParameterMembers::One {<>})
+    },
+    <value_parameter_member:ValueParameterMember> <comma:Lexeme<COMMA>> <value_parameter_members:ValueParameterMembers> => {
+        Constituent::new((value_parameter_member.location().0, value_parameter_members.location().1), ValueParameterMembers::More {<>})
+    },
+};
+
+AtomicValueParameter: Constituent<AtomicValueParameter> = {
+    <identifier:Lexeme<IDENTIFIER>> => {
+        Constituent::new(identifier.location(), AtomicValueParameter::Identifier {<>})
+    },
+    <lparen:Lexeme<LPAREN>> <value_parameters:ValueParameters> <rparen:Lexeme<RPAREN>> => {
+        Constituent::new((lparen.location().0, rparen.location().1), AtomicValueParameter::Tuple {<>})
+    },
+}
+
+ValueParameter: Constituent<ValueParameter> = {
+    <atomic_value_parameter:AtomicValueParameter> => {
+        Constituent::new(atomic_value_parameter.location(), ValueParameter::AtomicValueParameter {<>})
+    },
+    <identifier:Lexeme<IDENTIFIER>> <colon:Lexeme<COLON>> <type_expression:TypeExpression> => {
+        Constituent::new((identifier.location().0, type_expression.location().1), ValueParameter::Colon {<>})
+    },
+    <qualified_identifier:QualifiedIdentifier> <lbrace:Lexeme<LBRACE>> <rbrace:Lexeme<RBRACE>> => {
+        Constituent::new((qualified_identifier.location().0, rbrace.location().1), ValueParameter::EmptyRecord {<>})
+    },
+    <qualified_identifier:QualifiedIdentifier> <lbrace:Lexeme<LBRACE>> <value_parameter_members:ValueParameterMembers> <rbrace:Lexeme<RBRACE>> => {
+        Constituent::new((qualified_identifier.location().0, rbrace.location().1), ValueParameter::NonEmptyRecord {<>})
+    },
+    <family:Lexeme<FAMILY>> <qualified_identifier:QualifiedIdentifier> <atomic_value_parameter:AtomicValueParameter> => {
+        Constituent::new((family.location().0, atomic_value_parameter.location().1), ValueParameter::Family {<>})
+    },
+};
+
+ValueParameters: Constituent<ValueParameters> = {
+    <value_parameter:ValueParameter> => {
+        Constituent::new(value_parameter.location(), ValueParameters::One {<>})
+    },
+    <value_parameter:ValueParameter> <comma:Lexeme<COMMA>> <value_parameters:ValueParameters> => {
+        Constituent::new((value_parameter.location().0, value_parameters.location().1), ValueParameters::More {<>})
+    },
+};
+
+ValueMember: Constituent<ValueMember> = {
+    <identifier:Lexeme<IDENTIFIER>> => {
+        Constituent::new(identifier.location(), ValueMember::Identifier {<>})
+    },
+    <identifier:Lexeme<IDENTIFIER>> <coloneq:Lexeme<COLONEQ>> <value_expression:ValueExpression> => {
+        Constituent::new((identifier.location().0, value_expression.location().1), ValueMember::Coloneq {<>})
+    },
+};
+
+ValueMembers: Constituent<ValueMembers> = {
+    <value_member:ValueMember> => {
+        Constituent::new(value_member.location(), ValueMembers::One {<>})
+    },
+    <value_member:ValueMember> <comma:Lexeme<COMMA>> <value_members:ValueMembers> => {
+        Constituent::new((value_member.location().0, value_members.location().1), ValueMembers::More {<>})
+    },
+};
+
+ValueImplication: Constituent<ValueImplication> = {
+    <identifier:Lexeme<IDENTIFIER>> <darrow:Lexeme<DARROW>> <value_expression:ValueExpression> => {
+        Constituent::new((identifier.location().0, value_expression.location().1), ValueImplication::Variant {<>})
+    },
+    <identifier:Lexeme<IDENTIFIER>> <atomic_value_parameter:AtomicValueParameter> <darrow:Lexeme<DARROW>> <value_expression:ValueExpression> => {
+        Constituent::new((identifier.location().0, value_expression.location().1), ValueImplication::VariantOf {<>})
+    },
+};
+
+ValueImplications: Constituent<ValueImplications> = {
+    <value_implication:ValueImplication> => {
+        Constituent::new(value_implication.location(), ValueImplications::One {<>})
+    },
+    <value_implication:ValueImplication> <pipe:Lexeme<PIPE>> <value_implications:ValueImplications> => {
+        Constituent::new((value_implication.location().0, value_implications.location().1), ValueImplications::More {<>})
+    },
+};
+
+AtomicValueExpression: Constituent<AtomicValueExpression> = {
+    <false_:Lexeme<FALSE>> => {
+        Constituent::new(false_.location(), AtomicValueExpression::False {<>})
+    },
+    <true_:Lexeme<TRUE>> => {
+        Constituent::new(true_.location(), AtomicValueExpression::True {<>})
+    },
+    <integer:Lexeme<INTEGER>> => {
+        Constituent::new(integer.location(), AtomicValueExpression::Integer {<>})
+    },
+    <rational:Lexeme<RATIONAL>> => {
+        Constituent::new(rational.location(), AtomicValueExpression::Rational {<>})
+    },
+    <string:Lexeme<STRING>> => {
+        Constituent::new(string.location(), AtomicValueExpression::String {<>})
+    },
+    <binary:Lexeme<BINARY>> => {
+        Constituent::new(binary.location(), AtomicValueExpression::Binary {<>})
+    },
+    <qualified_identifier:QualifiedIdentifier> => {
+        Constituent::new(qualified_identifier.location(), AtomicValueExpression::QualifiedIdentifier {<>})
+    },
+    <qualified_identifier:QualifiedIdentifier> <dot:Lexeme<DOT>> <eq:Lexeme<EQ>> => {
+        Constituent::new((qualified_identifier.location().0, eq.location().1), AtomicValueExpression::QualifiedIdentifierDotEq {<>})
+    },
+    <qualified_identifier:QualifiedIdentifier> <dot:Lexeme<DOT>> <noteq:Lexeme<NOTEQ>> => {
+        Constituent::new((qualified_identifier.location().0, noteq.location().1), AtomicValueExpression::QualifiedIdentifierDotNoteq {<>})
+    },
+    <qualified_identifier:QualifiedIdentifier> <dot:Lexeme<DOT>> <lte:Lexeme<LTE>> => {
+        Constituent::new((qualified_identifier.location().0, lte.location().1), AtomicValueExpression::QualifiedIdentifierDotLte {<>})
+    },
+    <qualified_identifier:QualifiedIdentifier> <dot:Lexeme<DOT>> <lt:Lexeme<LT>> => {
+        Constituent::new((qualified_identifier.location().0, lt.location().1), AtomicValueExpression::QualifiedIdentifierDotLt {<>})
+    },
+    <qualified_identifier:QualifiedIdentifier> <dot:Lexeme<DOT>> <gte:Lexeme<GTE>> => {
+        Constituent::new((qualified_identifier.location().0, gte.location().1), AtomicValueExpression::QualifiedIdentifierDotGte {<>})
+    },
+    <qualified_identifier:QualifiedIdentifier> <dot:Lexeme<DOT>> <gt:Lexeme<GT>> => {
+        Constituent::new((qualified_identifier.location().0, gt.location().1), AtomicValueExpression::QualifiedIdentifierDotGt {<>})
+    },
+    <qualified_identifier:QualifiedIdentifier> <dot:Lexeme<DOT>> <plus:Lexeme<PLUS>> => {
+        Constituent::new((qualified_identifier.location().0, plus.location().1), AtomicValueExpression::QualifiedIdentifierDotPlus {<>})
+    },
+    <qualified_identifier:QualifiedIdentifier> <dot:Lexeme<DOT>> <minus:Lexeme<MINUS>> => {
+        Constituent::new((qualified_identifier.location().0, minus.location().1), AtomicValueExpression::QualifiedIdentifierDotMinus {<>})
+    },
+    <qualified_identifier:QualifiedIdentifier> <dot:Lexeme<DOT>> <asterisk:Lexeme<ASTERISK>> => {
+        Constituent::new((qualified_identifier.location().0, asterisk.location().1), AtomicValueExpression::QualifiedIdentifierDotAsterisk {<>})
+    },
+    <qualified_identifier:QualifiedIdentifier> <dot:Lexeme<DOT>> <slash:Lexeme<SLASH>> => {
+        Constituent::new((qualified_identifier.location().0, slash.location().1), AtomicValueExpression::QualifiedIdentifierDotSlash {<>})
+    },
+    <qualified_identifier:QualifiedIdentifier> <dot:Lexeme<DOT>> <percent:Lexeme<PERCENT>> => {
+        Constituent::new((qualified_identifier.location().0, percent.location().1), AtomicValueExpression::QualifiedIdentifierDotPercent {<>})
+    },
+    <qualified_identifier:QualifiedIdentifier> <coloncolon:Lexeme<COLONCOLON>> <identifier:Lexeme<IDENTIFIER>> => {
+        Constituent::new((qualified_identifier.location().0, identifier.location().1), AtomicValueExpression::QualifiedIdentifierColoncolonIdentifier {<>})
+    },
+    <lbracket:Lexeme<LBRACKET>> <rbracket:Lexeme<RBRACKET>> => {
+        Constituent::new((lbracket.location().0, rbracket.location().1), AtomicValueExpression::EmptyArray {<>})
+    },
+    <lbracket:Lexeme<LBRACKET>> <value_expressions:ValueExpressions> <rbracket:Lexeme<RBRACKET>> => {
+        Constituent::new((lbracket.location().0, rbracket.location().1), AtomicValueExpression::NonEmptyArray {<>})
+    },
+    <lbracket:Lexeme<LBRACKET>> <value_expression1:ValueExpression> <pipe:Lexeme<PIPE>> <value_parameter:ValueParameter> <in_:Lexeme<IN>> <value_expression2:ValueExpression> <rbracket:Lexeme<RBRACKET>> => {
+        Constituent::new((lbracket.location().0, rbracket.location().1), AtomicValueExpression::MapArray {<>})
+    },
+    <lbracket:Lexeme<LBRACKET>> <value_expression1:ValueExpression> <pipe:Lexeme<PIPE>> <value_parameter:ValueParameter> <in_:Lexeme<IN>> <value_expression2:ValueExpression> <dotdot:Lexeme<DOTDOT>> <value_expression3:ValueExpression> <rbracket:Lexeme<RBRACKET>> => {
+        Constituent::new((lbracket.location().0, rbracket.location().1), AtomicValueExpression::MapRange {<>})
+    },
+    <lparen:Lexeme<LPAREN>> <value_expressions:ValueExpressions> <rparen:Lexeme<RPAREN>> => {
+        Constituent::new((lparen.location().0, rparen.location().1), AtomicValueExpression::Tuple {<>})
+    },
+};
+
+ApplicativeValueExpression: Constituent<ApplicativeValueExpression> = {
+    <atomic_value_expression:AtomicValueExpression> => {
+        Constituent::new(atomic_value_expression.location(), ApplicativeValueExpression::AtomicValueExpression {<>})
+    },
+    <applicative_value_expression:ApplicativeValueExpression> <atomic_value_expression:AtomicValueExpression> => {
+        Constituent::new((applicative_value_expression.location().0, atomic_value_expression.location().1), ApplicativeValueExpression::Apply {<>})
+    },
+};
+
+RecordValueExpression: Constituent<RecordValueExpression> = {
+    <applicative_value_expression:ApplicativeValueExpression> => {
+        Constituent::new(applicative_value_expression.location(), RecordValueExpression::ApplicativeValueExpression {<>})
+    },
+    <qualified_identifier:QualifiedIdentifier> <lbrace:Lexeme<LBRACE>> <rbrace:Lexeme<RBRACE>> => {
+        Constituent::new((qualified_identifier.location().0, rbrace.location().1), RecordValueExpression::EmptyRecord {<>})
+    },
+    <qualified_identifier:QualifiedIdentifier> <lbrace:Lexeme<LBRACE>> <value_members:ValueMembers> <rbrace:Lexeme<RBRACE>> => {
+        Constituent::new((qualified_identifier.location().0, rbrace.location().1), RecordValueExpression::NonEmptyRecord {<>})
+    },
+};
+
+ComplementaryValueExpression: Constituent<ComplementaryValueExpression> = {
+    <record_value_expression:RecordValueExpression> => {
+        Constituent::new(record_value_expression.location(), ComplementaryValueExpression::RecordValueExpression {<>})
+    },
+    <exclamation:Lexeme<EXCLAMATION>> <complementary_value_expression:ComplementaryValueExpression> => {
+        Constituent::new((exclamation.location().0, complementary_value_expression.location().1), ComplementaryValueExpression::Exclamation {<>})
+    },
+    <amp:Lexeme<AMP>> <complementary_value_expression:ComplementaryValueExpression> => {
+        Constituent::new((amp.location().0, complementary_value_expression.location().1), ComplementaryValueExpression::Amp {<>})
+    },
+    <asterisk:Lexeme<ASTERISK>> <complementary_value_expression:ComplementaryValueExpression> => {
+        Constituent::new((asterisk.location().0, complementary_value_expression.location().1), ComplementaryValueExpression::Asterisk {<>})
+    },
+};
+
+MultiplicativeValueExpression: Constituent<MultiplicativeValueExpression> = {
+    <complementary_value_expression:ComplementaryValueExpression> => {
+        Constituent::new(complementary_value_expression.location(), MultiplicativeValueExpression::ComplementaryValueExpression {<>})
+    },
+    <multiplicative_value_expression:MultiplicativeValueExpression> <asterisk:Lexeme<ASTERISK>> <complementary_value_expression:ComplementaryValueExpression> => {
+        Constituent::new((multiplicative_value_expression.location().0, complementary_value_expression.location().1), MultiplicativeValueExpression::Asterisk {<>})
+    },
+    <multiplicative_value_expression:MultiplicativeValueExpression> <slash:Lexeme<SLASH>> <complementary_value_expression:ComplementaryValueExpression> => {
+        Constituent::new((multiplicative_value_expression.location().0, complementary_value_expression.location().1), MultiplicativeValueExpression::Slash {<>})
+    },
+    <multiplicative_value_expression:MultiplicativeValueExpression> <percent:Lexeme<PERCENT>> <complementary_value_expression:ComplementaryValueExpression> => {
+        Constituent::new((multiplicative_value_expression.location().0, complementary_value_expression.location().1), MultiplicativeValueExpression::Percent {<>})
+    },
+};
+
+AdditiveValueExpression: Constituent<AdditiveValueExpression> = {
+    <multiplicative_value_expression:MultiplicativeValueExpression> => {
+        Constituent::new(multiplicative_value_expression.location(), AdditiveValueExpression::MultiplicativeValueExpression {<>})
+    },
+    <additive_value_expression:AdditiveValueExpression> <plus:Lexeme<PLUS>> <multiplicative_value_expression:MultiplicativeValueExpression> => {
+        Constituent::new((additive_value_expression.location().0, multiplicative_value_expression.location().1), AdditiveValueExpression::Plus {<>})
+    },
+    <additive_value_expression:AdditiveValueExpression> <minus:Lexeme<MINUS>> <multiplicative_value_expression:MultiplicativeValueExpression> => {
+        Constituent::new((additive_value_expression.location().0, multiplicative_value_expression.location().1), AdditiveValueExpression::Minus {<>})
+    },
+};
+
+ComparativeValueExpression: Constituent<ComparativeValueExpression> = {
+    <additive_value_expression:AdditiveValueExpression> => {
+        Constituent::new(additive_value_expression.location(), ComparativeValueExpression::AdditiveValueExpression {<>})
+    },
+    <comparative_value_expression:ComparativeValueExpression> <eq:Lexeme<EQ>> <additive_value_expression:AdditiveValueExpression> => {
+        Constituent::new((comparative_value_expression.location().0, additive_value_expression.location().1), ComparativeValueExpression::Eq {<>})
+    },
+    <comparative_value_expression:ComparativeValueExpression> <noteq:Lexeme<NOTEQ>> <additive_value_expression:AdditiveValueExpression> => {
+        Constituent::new((comparative_value_expression.location().0, additive_value_expression.location().1), ComparativeValueExpression::Noteq {<>})
+    },
+    <comparative_value_expression:ComparativeValueExpression> <lte:Lexeme<LTE>> <additive_value_expression:AdditiveValueExpression> => {
+        Constituent::new((comparative_value_expression.location().0, additive_value_expression.location().1), ComparativeValueExpression::Lte {<>})
+    },
+    <comparative_value_expression:ComparativeValueExpression> <lt:Lexeme<LT>> <additive_value_expression:AdditiveValueExpression> => {
+        Constituent::new((comparative_value_expression.location().0, additive_value_expression.location().1), ComparativeValueExpression::Lt {<>})
+    },
+    <comparative_value_expression:ComparativeValueExpression> <gte:Lexeme<GTE>> <additive_value_expression:AdditiveValueExpression> => {
+        Constituent::new((comparative_value_expression.location().0, additive_value_expression.location().1), ComparativeValueExpression::Gte {<>})
+    },
+    <comparative_value_expression:ComparativeValueExpression> <gt:Lexeme<GT>> <additive_value_expression:AdditiveValueExpression> => {
+        Constituent::new((comparative_value_expression.location().0, additive_value_expression.location().1), ComparativeValueExpression::Gt {<>})
+    },
+};
+
+ConjunctiveValueExpression: Constituent<ConjunctiveValueExpression> = {
+    <comparative_value_expression:ComparativeValueExpression> => {
+        Constituent::new(comparative_value_expression.location(), ConjunctiveValueExpression::ComparativeValueExpression {<>})
+    },
+    <conjunctive_value_expression:ConjunctiveValueExpression> <and:Lexeme<AND>> <comparative_value_expression:ComparativeValueExpression> => {
+        Constituent::new((conjunctive_value_expression.location().0, comparative_value_expression.location().1), ConjunctiveValueExpression::And {<>})
+    },
+};
+
+DisjunctiveValueExpression: Constituent<DisjunctiveValueExpression> = {
+    <conjunctive_value_expression:ConjunctiveValueExpression> => {
+        Constituent::new(conjunctive_value_expression.location(), DisjunctiveValueExpression::ConjunctiveValueExpression {<>})
+    },
+    <disjunctive_value_expression:DisjunctiveValueExpression> <or:Lexeme<OR>> <conjunctive_value_expression:ConjunctiveValueExpression> => {
+        Constituent::new((disjunctive_value_expression.location().0, conjunctive_value_expression.location().1), DisjunctiveValueExpression::Or {<>})
+    },
+};
+
+AssignmentValueExpression: Constituent<AssignmentValueExpression> = {
+    <disjunctive_value_expression:DisjunctiveValueExpression> => {
+        Constituent::new(disjunctive_value_expression.location(), AssignmentValueExpression::DisjunctiveValueExpression {<>})
+    },
+    <disjunctive_value_expression:DisjunctiveValueExpression> <coloneq:Lexeme<COLONEQ>> <assignment_value_expression:AssignmentValueExpression> => {
+        Constituent::new((disjunctive_value_expression.location().0, assignment_value_expression.location().1), AssignmentValueExpression::Coloneq {<>})
+    },
+};
+
+ControlValueExpression: Constituent<ControlValueExpression> = {
+    <assignment_value_expression:AssignmentValueExpression> => {
+        Constituent::new(assignment_value_expression.location(), ControlValueExpression::AssignmentValueExpression {<>})
+    },
+    <qualified_identifier:QualifiedIdentifier> <dot:Lexeme<DOT>> <match_:Lexeme<MATCH>> <value_expression:ValueExpression> <with:Lexeme<WITH>> <end:Lexeme<END>> => {
+        Constituent::new((qualified_identifier.location().0, end.location().1), ControlValueExpression::EmptyMatch {<>})
+    },
+    <qualified_identifier:QualifiedIdentifier> <dot:Lexeme<DOT>> <match_:Lexeme<MATCH>> <value_expression:ValueExpression> <with:Lexeme<WITH>> <value_implications:ValueImplications> <end:Lexeme<END>> => {
+        Constituent::new((qualified_identifier.location().0, end.location().1), ControlValueExpression::NonEmptyMatch {<>})
+    },
+    <for_:Lexeme<FOR>> <value_parameter:ValueParameter> <in_:Lexeme<IN>> <value_expression1:ValueExpression> <do_:Lexeme<DO>> <value_expression2:ValueExpression> <end:Lexeme<END>> => {
+        Constituent::new((for_.location().0, end.location().1), ControlValueExpression::ForArray {<>})
+    },
+    <for_:Lexeme<FOR>> <value_parameter:ValueParameter> <in_:Lexeme<IN>> <value_expression1:ValueExpression> <dotdot:Lexeme<DOTDOT>> <value_expression2:ValueExpression> <do_:Lexeme<DO>> <value_expression3:ValueExpression> <end:Lexeme<END>> => {
+        Constituent::new((for_.location().0, end.location().1), ControlValueExpression::ForRange {<>})
+    },
+}
+
+ValueExpression: Constituent<ValueExpression> = {
+    <control_value_expression:ControlValueExpression> => {
+        Constituent::new(control_value_expression.location(), ValueExpression::ControlValueExpression {<>})
+    },
+    <control_value_expression:ControlValueExpression> <semicolon:Lexeme<SEMICOLON>> <value_expression:ValueExpression> => {
+        Constituent::new((control_value_expression.location().0, value_expression.location().1), ValueExpression::Semicolon {<>})
+    },
+    <hat:Lexeme<HAT>> <atomic_value_parameter:AtomicValueParameter> <dot:Lexeme<DOT>> <value_expression:ValueExpression> => {
+        Constituent::new((hat.location().0, value_expression.location().1), ValueExpression::Abstraction {<>})
+    },
+    <let_:Lexeme<LET>> <identifier:Lexeme<IDENTIFIER>> <coloneq:Lexeme<COLONEQ>> <value_expression1:ValueExpression> <in_:Lexeme<IN>> <value_expression2:ValueExpression> => {
+        Constituent::new((let_.location().0, value_expression2.location().1), ValueExpression::Let {<>})
+    },
+    <if_:Lexeme<IF>> <value_expression1:ValueExpression> <then:Lexeme<THEN>> <value_expression2:ValueExpression> <else_:Lexeme<ELSE>> <value_expression3:ValueExpression> => {
+        Constituent::new((if_.location().0, value_expression3.location().1), ValueExpression::If {<>})
+    },
+};
+
+ValueExpressions: Constituent<ValueExpressions> = {
+    <value_expression:ValueExpression> => {
+        Constituent::new(value_expression.location(), ValueExpressions::One {<>})
+    },
+    <value_expression:ValueExpression> <comma:Lexeme<COMMA>> <value_expressions:ValueExpressions> => {
+        Constituent::new((value_expression.location().0, value_expressions.location().1), ValueExpressions::More {<>})
+    },
+};
+
+ValueDefinition: Constituent<ValueDefinition> = {
+    <def:Lexeme<DEF>> <identifier:Lexeme<IDENTIFIER>> <coloneq:Lexeme<COLONEQ>> <value_expression:ValueExpression> => {
+        Constituent::new((def.location().0, value_expression.location().1), ValueDefinition::Def {<>})
+    },
+    <def:Lexeme<DEF>> <identifier:Lexeme<IDENTIFIER>> <colon:Lexeme<COLON>> <type_expression:TypeExpression> <coloneq:Lexeme<COLONEQ>> <value_expression:ValueExpression> => {
+        Constituent::new((def.location().0, value_expression.location().1), ValueDefinition::DefColon {<>})
+    },
+    <def:Lexeme<DEF>> <identifier:Lexeme<IDENTIFIER>> <lparen:Lexeme<LPAREN>> <value_parameters:ValueParameters> <rparen:Lexeme<RPAREN>> <coloneq:Lexeme<COLONEQ>> <value_expression:ValueExpression> => {
+        Constituent::new((def.location().0, value_expression.location().1), ValueDefinition::DefFn {<>})
+    },
+    <def:Lexeme<DEF>> <identifier:Lexeme<IDENTIFIER>> <lparen:Lexeme<LPAREN>> <value_parameters:ValueParameters> <rparen:Lexeme<RPAREN>> <colon:Lexeme<COLON>> <type_expression:TypeExpression> <coloneq:Lexeme<COLONEQ>> <value_expression:ValueExpression> => {
+        Constituent::new((def.location().0, value_expression.location().1), ValueDefinition::DefFnColon {<>})
+    },
+    <def:Lexeme<DEF>> <identifier:Lexeme<IDENTIFIER>> <lbracket:Lexeme<LBRACKET>> <type_parameters:TypeParameters> <rbracket:Lexeme<RBRACKET>> <coloneq:Lexeme<COLONEQ>> <value_expression:ValueExpression> => {
+        Constituent::new((def.location().0, value_expression.location().1), ValueDefinition::DefPoly {<>})
+    },
+    <def:Lexeme<DEF>> <identifier:Lexeme<IDENTIFIER>> <lbracket:Lexeme<LBRACKET>> <type_parameters:TypeParameters> <rbracket:Lexeme<RBRACKET>> <colon:Lexeme<COLON>> <type_expression:TypeExpression> <coloneq:Lexeme<COLONEQ>> <value_expression:ValueExpression> => {
+        Constituent::new((def.location().0, value_expression.location().1), ValueDefinition::DefPolyColon {<>})
+    },
+    <def:Lexeme<DEF>> <identifier:Lexeme<IDENTIFIER>> <lbracket:Lexeme<LBRACKET>> <type_parameters:TypeParameters> <rbracket:Lexeme<RBRACKET>> <lparen:Lexeme<LPAREN>> <value_parameters:ValueParameters> <rparen:Lexeme<RPAREN>> <coloneq:Lexeme<COLONEQ>> <value_expression:ValueExpression> => {
+        Constituent::new((def.location().0, value_expression.location().1), ValueDefinition::DefPolyFn {<>})
+    },
+    <def:Lexeme<DEF>> <identifier:Lexeme<IDENTIFIER>> <lbracket:Lexeme<LBRACKET>> <type_parameters:TypeParameters> <rbracket:Lexeme<RBRACKET>> <lparen:Lexeme<LPAREN>> <value_parameters:ValueParameters> <rparen:Lexeme<RPAREN>> <colon:Lexeme<COLON>> <type_expression:TypeExpression> <coloneq:Lexeme<COLONEQ>> <value_expression:ValueExpression> => {
+        Constituent::new((def.location().0, value_expression.location().1), ValueDefinition::DefPolyFnColon {<>})
+    },
+    <def:Lexeme<DEF>> <identifier1:Lexeme<IDENTIFIER>> <eq:Lexeme<EQ>> <identifier2:Lexeme<IDENTIFIER>> <coloneq:Lexeme<COLONEQ>> <value_expression:ValueExpression> => {
+        Constituent::new((def.location().0, value_expression.location().1), ValueDefinition::DefEq {<>})
+    },
+    <def:Lexeme<DEF>> <identifier1:Lexeme<IDENTIFIER>> <noteq:Lexeme<NOTEQ>> <identifier2:Lexeme<IDENTIFIER>> <coloneq:Lexeme<COLONEQ>> <value_expression:ValueExpression> => {
+        Constituent::new((def.location().0, value_expression.location().1), ValueDefinition::DefNoteq {<>})
+    },
+    <def:Lexeme<DEF>> <identifier1:Lexeme<IDENTIFIER>> <lte:Lexeme<LTE>> <identifier2:Lexeme<IDENTIFIER>> <coloneq:Lexeme<COLONEQ>> <value_expression:ValueExpression> => {
+        Constituent::new((def.location().0, value_expression.location().1), ValueDefinition::DefLte {<>})
+    },
+    <def:Lexeme<DEF>> <identifier1:Lexeme<IDENTIFIER>> <lt:Lexeme<LT>> <identifier2:Lexeme<IDENTIFIER>> <coloneq:Lexeme<COLONEQ>> <value_expression:ValueExpression> => {
+        Constituent::new((def.location().0, value_expression.location().1), ValueDefinition::DefLt {<>})
+    },
+    <def:Lexeme<DEF>> <identifier1:Lexeme<IDENTIFIER>> <gte:Lexeme<GTE>> <identifier2:Lexeme<IDENTIFIER>> <coloneq:Lexeme<COLONEQ>> <value_expression:ValueExpression> => {
+        Constituent::new((def.location().0, value_expression.location().1), ValueDefinition::DefGte {<>})
+    },
+    <def:Lexeme<DEF>> <identifier1:Lexeme<IDENTIFIER>> <gt:Lexeme<GT>> <identifier2:Lexeme<IDENTIFIER>> <coloneq:Lexeme<COLONEQ>> <value_expression:ValueExpression> => {
+        Constituent::new((def.location().0, value_expression.location().1), ValueDefinition::DefGt {<>})
+    },
+    <def:Lexeme<DEF>> <identifier1:Lexeme<IDENTIFIER>> <plus:Lexeme<PLUS>> <identifier2:Lexeme<IDENTIFIER>> <coloneq:Lexeme<COLONEQ>> <value_expression:ValueExpression> => {
+        Constituent::new((def.location().0, value_expression.location().1), ValueDefinition::DefPlus {<>})
+    },
+    <def:Lexeme<DEF>> <identifier1:Lexeme<IDENTIFIER>> <minus:Lexeme<MINUS>> <identifier2:Lexeme<IDENTIFIER>> <coloneq:Lexeme<COLONEQ>> <value_expression:ValueExpression> => {
+        Constituent::new((def.location().0, value_expression.location().1), ValueDefinition::DefMinus {<>})
+    },
+    <def:Lexeme<DEF>> <identifier1:Lexeme<IDENTIFIER>> <asterisk:Lexeme<ASTERISK>> <identifier2:Lexeme<IDENTIFIER>> <coloneq:Lexeme<COLONEQ>> <value_expression:ValueExpression> => {
+        Constituent::new((def.location().0, value_expression.location().1), ValueDefinition::DefAsterisk {<>})
+    },
+    <def:Lexeme<DEF>> <identifier1:Lexeme<IDENTIFIER>> <slash:Lexeme<SLASH>> <identifier2:Lexeme<IDENTIFIER>> <coloneq:Lexeme<COLONEQ>> <value_expression:ValueExpression> => {
+        Constituent::new((def.location().0, value_expression.location().1), ValueDefinition::DefSlash {<>})
+    },
+    <def:Lexeme<DEF>> <identifier1:Lexeme<IDENTIFIER>> <percent:Lexeme<PERCENT>> <identifier2:Lexeme<IDENTIFIER>> <coloneq:Lexeme<COLONEQ>> <value_expression:ValueExpression> => {
+        Constituent::new((def.location().0, value_expression.location().1), ValueDefinition::DefPercent {<>})
+    },
+};
+
+FamilyExpression: Constituent<FamilyExpression> = {
+    <family:Lexeme<FAMILY>> <definitions:Definitions> <end:Lexeme<END>> => {
+        Constituent::new((family.location().0, end.location().1), FamilyExpression::Family {<>})
+    },
+};
+
+FamilyDefinition: Constituent<FamilyDefinition> = {
+    <family:Lexeme<FAMILY>> <identifier:Lexeme<IDENTIFIER>> <coloneq:Lexeme<COLONEQ>> <family_expression:FamilyExpression> => {
+        Constituent::new((family.location().0, family_expression.location().1), FamilyDefinition::Family {<>})
+    },
+    <family:Lexeme<FAMILY>> <identifier:Lexeme<IDENTIFIER>> <subtype:Lexeme<SUBTYPE>> <type_expression:TypeExpression> <coloneq:Lexeme<COLONEQ>> <family_expression:FamilyExpression> => {
+        Constituent::new((family.location().0, family_expression.location().1), FamilyDefinition::FamilySubtype {<>})
+    },
+    <family:Lexeme<FAMILY>> <identifier:Lexeme<IDENTIFIER>> <lparen:Lexeme<LPAREN>> <value_parameters:ValueParameters> <rparen:Lexeme<RPAREN>> <coloneq:Lexeme<COLONEQ>> <family_expression:FamilyExpression> => {
+        Constituent::new((family.location().0, family_expression.location().1), FamilyDefinition::FamilyFn {<>})
+    },
+    <family:Lexeme<FAMILY>> <identifier:Lexeme<IDENTIFIER>> <lparen:Lexeme<LPAREN>> <value_parameters:ValueParameters> <rparen:Lexeme<RPAREN>> <subtype:Lexeme<SUBTYPE>> <type_expression:TypeExpression> <coloneq:Lexeme<COLONEQ>> <family_expression:FamilyExpression> => {
+        Constituent::new((family.location().0, family_expression.location().1), FamilyDefinition::FamilyFnSubtype {<>})
+    },
+    <family:Lexeme<FAMILY>> <identifier:Lexeme<IDENTIFIER>> <lbracket:Lexeme<LBRACKET>> <type_parameters:TypeParameters> <rbracket:Lexeme<RBRACKET>> <coloneq:Lexeme<COLONEQ>> <family_expression:FamilyExpression> => {
+        Constituent::new((family.location().0, family_expression.location().1), FamilyDefinition::PolyFamily {<>})
+    },
+    <family:Lexeme<FAMILY>> <identifier:Lexeme<IDENTIFIER>> <lbracket:Lexeme<LBRACKET>> <type_parameters:TypeParameters> <rbracket:Lexeme<RBRACKET>> <subtype:Lexeme<SUBTYPE>> <type_expression:TypeExpression> <coloneq:Lexeme<COLONEQ>> <family_expression:FamilyExpression> => {
+        Constituent::new((family.location().0, family_expression.location().1), FamilyDefinition::PolyFamilySubtype {<>})
+    },
+    <family:Lexeme<FAMILY>> <identifier:Lexeme<IDENTIFIER>> <lbracket:Lexeme<LBRACKET>> <type_parameters:TypeParameters> <rbracket:Lexeme<RBRACKET>> <lparen:Lexeme<LPAREN>> <value_parameters:ValueParameters> <rparen:Lexeme<RPAREN>> <coloneq:Lexeme<COLONEQ>> <family_expression:FamilyExpression> => {
+        Constituent::new((family.location().0, family_expression.location().1), FamilyDefinition::PolyFamilyFn {<>})
+    },
+    <family:Lexeme<FAMILY>> <identifier:Lexeme<IDENTIFIER>> <lbracket:Lexeme<LBRACKET>> <type_parameters:TypeParameters> <rbracket:Lexeme<RBRACKET>> <lparen:Lexeme<LPAREN>> <value_parameters:ValueParameters> <rparen:Lexeme<RPAREN>> <subtype:Lexeme<SUBTYPE>> <type_expression:TypeExpression> <coloneq:Lexeme<COLONEQ>> <family_expression:FamilyExpression> => {
+        Constituent::new((family.location().0, family_expression.location().1), FamilyDefinition::PolyFamilyFnSubtype {<>})
+    },
+};
+
+Definition: Constituent<Definition> = {
+    <type_definition:TypeDefinition> => {
+        Constituent::new(type_definition.location(), Definition::TypeDefinition {<>})
+    },
+    <value_definition:ValueDefinition> => {
+        Constituent::new(value_definition.location(), Definition::ValueDefinition {<>})
+    },
+    <family_definition:FamilyDefinition> => {
+        Constituent::new(family_definition.location(), Definition::FamilyDefinition {<>})
+    },
+    <type_definition:TypeDefinition> <where_:Lexeme<WHERE>> <definition:Definition> => {
+        Constituent::new((type_definition.location().0, definition.location().1), Definition::TypeDefinitionWhere {<>})
+    },
+    <value_definition:ValueDefinition> <where_:Lexeme<WHERE>> <definition:Definition> => {
+        Constituent::new((value_definition.location().0, definition.location().1), Definition::ValueDefinitionWhere {<>})
+    },
+    <family_definition:FamilyDefinition> <where_:Lexeme<WHERE>> <definition:Definition> => {
+        Constituent::new((family_definition.location().0, definition.location().1), Definition::FamilyDefinitionWhere {<>})
+    },
+};
+
+Definitions: Constituent<Definitions> = {
+    <definition:Definition> => {
+        Constituent::new(definition.location(), Definitions::One {<>})
+    },
+    <definition:Definition> <definitions:Definitions> => {
+        Constituent::new((definition.location().0, definitions.location().1), Definitions::More {<>})
+    },
+};
+
+pub Program: Constituent<Program> = {
+    <definitions:Definitions> => {
+        Constituent::new(definitions.location(), Program::Definitions {<>})
+    },
+};
+
+Lexeme<T>: Lexeme = {
+    <left:@L> <x:T> <right:@R> => {
+        Lexeme::new((left, right), String::from(x))
+    }
+};
+
+match {
+    r"\s*" => {},
+    "!" => EXCLAMATION,
+    r#""([^"\\]|\\"|\\\\)*""# => STRING,
+    r"#(\s|[a-fA-F0-9])*#" => BINARY,
+    "!=" => NOTEQ,
+    "%" => PERCENT,
+    "&" => AMP,
+    "&&" => AND,
+    "(" => LPAREN,
+    ")" => RPAREN,
+    "*" => ASTERISK,
+    "+" => PLUS,
+    "," => COMMA,
+    r"[+-]?[0-9]+" => INTEGER,
+    r"[+-]?[0-9]+\.[0-9]+" => RATIONAL,
+    "-" => MINUS,
+    "->" => ARROW,
+    "." => DOT,
+    ".." => DOTDOT,
+    "/" => SLASH,
+    ":" => COLON,
+    "::" => COLONCOLON,
+    ":=" => COLONEQ,
+    ";" => SEMICOLON,
+    "<" => LT,
+    "<:" => SUBTYPE,
+    "<=" => LTE,
+    "==" => EQ,
+    "=>" => DARROW,
+    ">" => GT,
+    ">=" => GTE,
+    "?" => QUESTION,
+    "^" => HAT,
+    r"[A-Z_a-z][0-9A-Z_a-z]*" => IDENTIFIER,
+    "else" => ELSE,
+    "false" => FALSE,
+    "forall" => FORALL,
+    "def" => DEF,
+    "do" => DO,
+    "end" => END,
+    "exists" => EXISTS,
+    "family" => FAMILY,
+    "for" => FOR,
+    "if" => IF,
+    "in" => IN,
+    "inductive" => INDUCTIVE,
+    "let" => LET,
+    "match" => MATCH,
+    "of" => OF,
+    "struct" => STRUCT,
+    "then" => THEN,
+    "true" => TRUE,
+    "type" => TYPE,
+    "with" => WITH,
+    "where" => WHERE,
+    "[" => LBRACKET,
+    "]" => RBRACKET,
+    "{" => LBRACE,
+    "|" => PIPE,
+    "||" => OR,
+    "}" => RBRACE,
+}

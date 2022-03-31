@@ -1,0 +1,7 @@
+family logic := family
+  struct top := {}
+  struct bot := []
+
+  def absurd[a](x : bot) : a :=
+    bot.match x with end
+end
