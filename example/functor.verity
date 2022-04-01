@@ -55,13 +55,18 @@ def int_ord := Ord {
   less_than := ^x. ^y. x < y
 }
 
+def rational_ord := Ord {
+  equal := ^x. ^y. Rational.==(x, y),
+  less_than := ^x. ^y. Rational.<(x, y)
+}
+
 def assert(b) :=
   if b then
     stdout.puts "... OK."
   else
     stdout.puts "... NG."
 
-def main(args) :=
+def int_test(args) :=
   let s := set.op.singleton int_ord 0 in
     set.op.insert int_ord (1, s);
     set.op.insert int_ord (-1, s);
@@ -80,3 +85,26 @@ def main(args) :=
 
     stdout.puts "member(-2, s) should be false.";
     assert (!set.op.member int_ord (-2, s))
+
+def rational_test(args) :=
+  let s := set.op.singleton rational_ord 0.0 in
+    set.op.insert rational_ord (1.0, s);
+    set.op.insert rational_ord (-1.0, s);
+
+    stdout.puts "member(0.0, s) should be true.";
+    assert (set.op.member rational_ord (0.0, s));
+
+    stdout.puts "member(1.0, s) should be true.";
+    assert (set.op.member rational_ord (1.0, s));
+
+    stdout.puts "member(-1.0, s) should be true.";
+    assert (set.op.member rational_ord (-1.0, s));
+
+    stdout.puts "member(2.0, s) should be false.";
+    assert (!set.op.member rational_ord (2.0, s));
+
+    stdout.puts "member(-2.0, s) should be false.";
+    assert (!set.op.member rational_ord (-2.0, s))
+
+def main(args) :=
+  int_test(args); rational_test(args)
