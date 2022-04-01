@@ -80,4 +80,3 @@ def main(args) :=
 
     stdout.puts "member(-2, s) should be false.";
     assert (!set.op.member int_ord (-2, s))
-
