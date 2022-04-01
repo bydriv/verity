@@ -1,0 +1,83 @@
+struct Ord(t) := {
+  equal : t -> t -> bool,
+  less_than : t -> t -> bool
+}
+
+family set := family
+  inductive node(a) := [ empty | branch of &node(a) * &a * &node(a) ]
+  struct set(a) := { size : &int, root : &node(a) }
+
+  family op[t](ord : Ord(t)) := family
+    def x == y := Ord.equal ord x y
+    def x < y := Ord.less_than ord x y
+
+    def singleton(x) :=
+      set { size := &1, root := &node.branch(&node.empty, &x, &node.empty) }
+
+    def insert(x, set { size, root }) :=
+      let nd := &root in
+      for i in 0..*size + 1 do
+        node.match **nd with
+          empty =>
+            *nd := node.branch(&node.empty, &x, &node.empty);
+            size := *size + 1
+        | branch(lnode, y, rnode) =>
+            if x == *y then
+              y := x; false
+            else if x < *y then
+              nd := lnode
+            else
+              nd := rnode
+        end
+      end; true
+
+    def member(x, set { size, root }) :=
+      let result := &false in
+      let nd := &root in
+      for i in 0..*size do
+        node.match **nd with
+          empty =>
+            false
+        | branch(lnode, y, rnode) =>
+            if x == *y then
+              result := true; false
+            else if x < *y then
+              nd := lnode
+            else
+              nd := rnode
+        end
+      end; *result
+  end
+end
+
+def int_ord := Ord {
+  equal := ^x. ^y. x == y,
+  less_than := ^x. ^y. x < y
+}
+
+def assert(b) :=
+  if b then
+    stdout.puts "... OK."
+  else
+    stdout.puts "... NG."
+
+def main(args) :=
+  let s := set.op.singleton int_ord 0 in
+    set.op.insert int_ord (1, s);
+    set.op.insert int_ord (-1, s);
+
+    stdout.puts "member(0, s) should be true.";
+    assert (set.op.member int_ord (0, s));
+
+    stdout.puts "member(1, s) should be true.";
+    assert (set.op.member int_ord (1, s));
+
+    stdout.puts "member(-1, s) should be true.";
+    assert (set.op.member int_ord (-1, s));
+
+    stdout.puts "member(2, s) should be false.";
+    assert (!set.op.member int_ord (2, s));
+
+    stdout.puts "member(-2, s) should be false.";
+    assert (!set.op.member int_ord (-2, s))
+
