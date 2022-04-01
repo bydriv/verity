@@ -20,7 +20,7 @@ family set := family
         node.match **nd with
           empty =>
             *nd := node.branch(&node.empty, &x, &node.empty);
-            size := *size + 1
+            size := *size + 1; false
         | branch(lnode, y, rnode) =>
             if x == *y then
               y := x; false
