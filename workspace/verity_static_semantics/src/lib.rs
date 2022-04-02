@@ -5925,6 +5925,81 @@ impl Verifier {
 
                 Ok(fold_effect(std::cmp::max(n - n1, m - m1), &type_value3))
             }
+            syntax::ControlValueExpression::ForArrayWhere {
+                for_: _for_,
+                value_parameter1,
+                in_: _in_,
+                value_expression1,
+                where_: _where,
+                value_parameter2,
+                coloneq: _coloneq,
+                value_expression2,
+                do_: _do_,
+                value_expression3,
+                end: _end,
+            } => {
+                let (type_value1, mut value_env) =
+                    self.eval_value_parameter(environment, value_parameter1, true)?;
+
+                let type_value2 = self.type_value_expression(environment, value_expression1)?;
+
+                let n = rank(&type_value2);
+                let type_value2 = unfold_effect(&type_value2);
+                let n1 = rank(&type_value2);
+
+                unify(
+                    value_parameter1.location(),
+                    &type_value2,
+                    &Constituent::new(
+                        value_expression1.location(),
+                        TypeValue::Application(
+                            Constituent::new(value_expression1.location(), TypeValue::Array),
+                            type_value1,
+                        ),
+                    ),
+                )?;
+
+                let mut local_environment = Environment {
+                    family_path: environment.family_path.clone(),
+                    family_parameter: environment.family_parameter.clone(),
+                    family_parameter_kind: environment.family_parameter_kind.clone(),
+                    family_parameter_type: environment.family_parameter_type.clone(),
+                    family_type: environment.family_type.clone(),
+                    type_env: environment.type_env.clone(),
+                    value_env: environment.value_env.clone(),
+                    family_env: environment.family_env.clone(),
+                    record_env: environment.record_env.clone(),
+                    variant_env: environment.variant_env.clone(),
+                };
+
+                local_environment.value_env.append(&mut value_env);
+
+                let (type_value5, mut value_env2) =
+                    self.eval_value_parameter(environment, value_parameter2, true)?;
+
+                local_environment.value_env.append(&mut value_env2);
+
+                let type_value3 = self.type_value_expression(&environment, value_expression2)?;
+
+                let type_value4 =
+                    self.type_value_expression(&local_environment, value_expression3)?;
+
+                let m = rank(&type_value3);
+                let type_value3 = unfold_effect(&type_value3);
+                let m1 = rank(&type_value3);
+
+                let r = rank(&type_value4);
+                let type_value4 = unfold_effect(&type_value4);
+                let r1 = rank(&type_value4);
+
+                unify(value_expression2.location(), &type_value3, &type_value5)?;
+                unify(value_expression2.location(), &type_value3, &type_value4)?;
+
+                Ok(fold_effect(
+                    std::cmp::max(n - n1, std::cmp::max(m - m1, r - r1)),
+                    &type_value4,
+                ))
+            }
             syntax::ControlValueExpression::ForRange {
                 for_: _for_,
                 value_parameter,
@@ -5998,6 +6073,94 @@ impl Verifier {
 
                 Ok(fold_effect(
                     std::cmp::max(n - n1, std::cmp::max(m - m1, r - r1)),
+                    &type_value4,
+                ))
+            }
+            syntax::ControlValueExpression::ForRangeWhere {
+                for_: _for_,
+                value_parameter1,
+                in_: _in_,
+                value_expression1,
+                dotdot: _dotdot,
+                value_expression2,
+                where_: _where,
+                value_parameter2,
+                coloneq: _coloneq,
+                value_expression3,
+                do_: _do_,
+                value_expression4,
+                end: _end,
+            } => {
+                let (type_value1, mut value_env) =
+                    self.eval_value_parameter(environment, value_parameter1, true)?;
+
+                let type_value2 = self.type_value_expression(environment, value_expression1)?;
+                let type_value3 = self.type_value_expression(environment, value_expression2)?;
+
+                let n = rank(&type_value2);
+                let type_value2 = unfold_effect(&type_value2);
+                let n1 = rank(&type_value2);
+
+                let m = rank(&type_value3);
+                let type_value3 = unfold_effect(&type_value3);
+                let m1 = rank(&type_value3);
+
+                unify(
+                    value_parameter1.location(),
+                    &type_value1,
+                    &Constituent::new(value_parameter1.location(), TypeValue::Int),
+                )?;
+
+                unify(
+                    value_parameter1.location(),
+                    &type_value2,
+                    &Constituent::new(value_expression1.location(), TypeValue::Int),
+                )?;
+
+                unify(
+                    value_parameter1.location(),
+                    &type_value3,
+                    &Constituent::new(value_expression2.location(), TypeValue::Int),
+                )?;
+
+                let mut local_environment = Environment {
+                    family_path: environment.family_path.clone(),
+                    family_parameter: environment.family_parameter.clone(),
+                    family_parameter_kind: environment.family_parameter_kind.clone(),
+                    family_parameter_type: environment.family_parameter_type.clone(),
+                    family_type: environment.family_type.clone(),
+                    type_env: environment.type_env.clone(),
+                    value_env: environment.value_env.clone(),
+                    family_env: environment.family_env.clone(),
+                    record_env: environment.record_env.clone(),
+                    variant_env: environment.variant_env.clone(),
+                };
+
+                local_environment.value_env.append(&mut value_env);
+
+                let (type_value6, mut value_env2) =
+                    self.eval_value_parameter(environment, value_parameter2, true)?;
+
+                local_environment.value_env.append(&mut value_env2);
+
+                let type_value4 = self.type_value_expression(&environment, value_expression3)?;
+
+                let type_value5 =
+                    self.type_value_expression(&local_environment, value_expression4)?;
+
+                let r = rank(&type_value4);
+                let type_value4 = unfold_effect(&type_value4);
+                let r1 = rank(&type_value4);
+
+                let k = rank(&type_value5);
+                let type_value5 = unfold_effect(&type_value5);
+                let k1 = rank(&type_value5);
+
+                unify(value_expression3.location(), &type_value4, &type_value6)?;
+                unify(value_expression3.location(), &type_value4, &type_value5)?;
+
+                Ok(fold_effect(
+                    std::cmp::max(n - n1, std::cmp::max(m - m1, std::cmp::max(r - r1, k - k1))),
                     &type_value4,
                 ))
             }

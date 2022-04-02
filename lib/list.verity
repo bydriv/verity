@@ -10,29 +10,27 @@ family list := family
         false
     end
 
-  def from_array[a](elements : array(a)) : t(a)! :=
-    let i := &0 in
-    let xs := &node.nil in
-    for x in elements do
-      xs := node.cons(x, *xs); i := *i + 1
-    end; t { length := *i, head := *xs }
+  def from_array[a](elements : array(a)) : t(a) :=
+    for x in elements where t {length, head} := t { length := 0, head := node.nil } do
+      t { length := length + 1, head := node.cons(x, head) }
+    end
 
-  def tabulate[a](n : int, f : int -> a) : t(a)! :=
-    let xs := &node.nil in
-    for i in 0..n do
-      xs := node.cons(f(i), *xs)
-    end; t { length := n, head := *xs }
+  def tabulate[a](n : int, f : int -> a) : t(a) :=
+    for x in 0..n where t {length, head} := t { length := 0, head := node.nil } do
+      t { length := length + 1, head := node.cons(f(x), head) }
+    end
 
-  def foldr[a, b](f : a * b -> b, y : b, xs : t(a)) : b! :=
-    let n := t.length xs in
-    let y := &y in
-    let xs := &t.head xs in
-    for i in 0..n do
-      node.match *xs with
-        nil =>
-          false
-      | cons(x, xs1) =>
-          y := f(x, *y); xs := xs1
+  def foldr[a, b](f : a * b -> b, y : b, xs : t(a)) : b :=
+    let fst := ^(x, y). x in
+    let result :=
+      for i in 0..t.length xs where (y, xs) := (y, t.head xs) do
+        node.match xs with
+          nil =>
+            (y, xs)
+        | cons(x, xs1) =>
+            (f(x, y), xs1)
+        end
       end
-    end; *y
+    in
+      fst result
 end

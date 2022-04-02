@@ -2012,7 +2012,7 @@ fn main() -> Result<(), std::io::Error> {
 
     for arg in &args[1..] {
         if arg == &String::from("--version") {
-            eprintln!("0.1.0");
+            eprintln!("0.1.1");
             return Ok(());
         }
     }

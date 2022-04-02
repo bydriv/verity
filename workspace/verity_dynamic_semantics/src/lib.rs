@@ -1892,6 +1892,119 @@ pub fn eval_control_value_expression(
                 Err(Error::Unsound { location })
             }
         }
+        syntax::ControlValueExpression::ForArrayWhere {
+            for_: _for_,
+            value_parameter1,
+            in_: _in_,
+            value_expression1,
+            where_: _where_,
+            value_parameter2,
+            coloneq: _coloneq,
+            value_expression2,
+            do_: _do_,
+            value_expression3,
+            end: _end,
+        } => {
+            let value1 = eval_value_expression(quasienvironment, environment, value_expression1)?;
+            let value2 = eval_value_expression(quasienvironment, environment, value_expression2)?;
+
+            if let Value::Array(array) = &*value1 {
+                let mut result = value2;
+
+                for x in array {
+                    let mut environment = environment.clone();
+
+                    apply_value_parameter(
+                        location,
+                        quasienvironment,
+                        &mut environment,
+                        value_parameter1,
+                        x,
+                    )?;
+
+                    apply_value_parameter(
+                        location,
+                        quasienvironment,
+                        &mut environment,
+                        value_parameter2,
+                        &result,
+                    )?;
+
+                    let value3 =
+                        eval_value_expression(quasienvironment, &environment, value_expression3)?;
+
+                    result = value3;
+                }
+
+                Ok(result)
+            } else {
+                Err(Error::Unsound { location })
+            }
+        }
+        syntax::ControlValueExpression::ForRangeWhere {
+            for_: _for_,
+            value_parameter1,
+            in_: _in_,
+            value_expression1,
+            dotdot: _dotdot,
+            value_expression2,
+            where_: _where_,
+            value_parameter2,
+            coloneq: _coloneq,
+            value_expression3,
+            do_: _do_,
+            value_expression4,
+            end: _end,
+        } => {
+            let value1 = eval_value_expression(quasienvironment, environment, value_expression1)?;
+            let value2 = eval_value_expression(quasienvironment, environment, value_expression2)?;
+            let value3 = eval_value_expression(quasienvironment, environment, value_expression3)?;
+
+            if let Value::Int(n) = &*value1 {
+                if let Value::Int(m) = &*value2 {
+                    let mut result = value3;
+
+                    let mut i = n.clone();
+                    let m = m.clone();
+
+                    while i < m {
+                        let mut environment = environment.clone();
+
+                        apply_value_parameter(
+                            location,
+                            quasienvironment,
+                            &mut environment,
+                            value_parameter1,
+                            &Constituent::new(location, Value::Int(i.clone())),
+                        )?;
+
+                        apply_value_parameter(
+                            location,
+                            quasienvironment,
+                            &mut environment,
+                            value_parameter2,
+                            &result,
+                        )?;
+
+                        let value4 = eval_value_expression(
+                            quasienvironment,
+                            &environment,
+                            value_expression4,
+                        )?;
+
+                        result = value4;
+
+                        i += num_bigint::BigInt::from(1u32);
+                    }
+
+                    Ok(result)
+                } else {
+                    Err(Error::Unsound { location })
+                }
+            } else {
+                Err(Error::Unsound { location })
+            }
+        }
         syntax::ControlValueExpression::ForRange {
             for_: _for_,
             value_parameter,

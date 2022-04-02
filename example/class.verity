@@ -1,0 +1,18 @@
+struct character := {
+  name : string,
+  age : &int
+}
+
+family Character(character {name, age}) := family
+  def grow(i) :=
+    age := *age + i
+end
+
+def main(args) :=
+  let alice := character { name := "alice", age := &16 } in
+    Character.grow alice 3;
+
+    if *character.age alice == 19 then
+      stdout.puts "OK"
+    else
+      stdout.puts "NG"

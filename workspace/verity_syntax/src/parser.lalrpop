@@ -553,6 +553,12 @@ ControlValueExpression: Constituent<ControlValueExpression> = {
     <for_:Lexeme<FOR>> <value_parameter:ValueParameter> <in_:Lexeme<IN>> <value_expression1:ValueExpression> <dotdot:Lexeme<DOTDOT>> <value_expression2:ValueExpression> <do_:Lexeme<DO>> <value_expression3:ValueExpression> <end:Lexeme<END>> => {
         Constituent::new((for_.location().0, end.location().1), ControlValueExpression::ForRange {<>})
     },
+    <for_:Lexeme<FOR>> <value_parameter1:ValueParameter> <in_:Lexeme<IN>> <value_expression1:ValueExpression> <where_:Lexeme<WHERE>> <value_parameter2:ValueParameter> <coloneq:Lexeme<COLONEQ>> <value_expression2:ValueExpression> <do_:Lexeme<DO>> <value_expression3:ValueExpression> <end:Lexeme<END>> => {
+        Constituent::new((for_.location().0, end.location().1), ControlValueExpression::ForArrayWhere {<>})
+    },
+    <for_:Lexeme<FOR>> <value_parameter1:ValueParameter> <in_:Lexeme<IN>> <value_expression1:ValueExpression> <dotdot:Lexeme<DOTDOT>> <value_expression2:ValueExpression> <where_:Lexeme<WHERE>> <value_parameter2:ValueParameter> <coloneq:Lexeme<COLONEQ>> <value_expression3:ValueExpression> <do_:Lexeme<DO>> <value_expression4:ValueExpression> <end:Lexeme<END>> => {
+        Constituent::new((for_.location().0, end.location().1), ControlValueExpression::ForRangeWhere {<>})
+    },
 }
 
 ValueExpression: Constituent<ValueExpression> = {
