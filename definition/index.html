@@ -1,0 +1,4117 @@
+<!DOCTYPE html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Verity: the Language Definition</title>
+  <style type="text/css">
+    html, body, article, section {
+      margin: 0;
+      padding: 0;
+    }
+
+    article {
+      padding: 0;
+      margin: 2em 0;
+    }
+
+    h1 {
+      margin: 1.4em;
+      padding: 0;
+      font-size: 1.66em;
+      font-weight: normal;
+      font-style: normal;
+      font-family: serif;
+      font-variant: small-caps;
+      text-align: center;
+    }
+
+    h2 {
+      margin: 1.6em;
+      padding: 0;
+      font-size: 1.25em;
+      font-weight: normal;
+      font-style: normal;
+      font-family: serif;
+      font-variant: small-caps;
+      text-align: center;
+    }
+
+    h3 {
+      margin: 1.8em;
+      padding: 0;
+      font-size: 1.11em;
+      font-weight: normal;
+      font-style: normal;
+      font-family: serif;
+      font-variant: normal;
+    }
+
+    math[display="block"] {
+      margin: 2em 4em;
+      padding: 0;
+      text-align: left;
+    }
+
+    mtable {
+      display: table;
+      margin: 0;
+      padding: 0;
+    }
+
+    mtr {
+      display: table-row;
+      margin: 0;
+      padding: 0;
+    }
+
+    mtd {
+      display: table-cell;
+      margin: 0;
+      padding: 0 0.5em;
+      text-align: left;
+    }
+
+    mi, mo, mtext {
+      font-family: serif;
+    }
+
+    mi[mathvariant="bold"] {
+      font-family: serif;
+      font-weight: bold;
+      font-style: normal;
+    }
+
+    mi[mathvariant="script"] {
+      font-family: serif;
+      font-weight: normal;
+      font-style: italic;
+    }
+
+    mtext[mathvariant="italic"] {
+      font-family: serif;
+      font-weight: normal;
+      font-style: italic;
+    }
+
+    mtext.monospace {
+      font-family: Consolas, monospace;
+      font-weight: normal;
+      font-style: normal;
+    }
+
+    mfrac {
+      display: grid;
+    }
+  </style>
+</head>
+
+<article>
+  <h1>Verity: the Language Definition</h1>
+
+  <section id="lexical-structure">
+    <h2>Lexical Structure</h2>
+
+    <math display="block">
+      <mtable columnalign="left left left">
+        <mtr>
+          <mtd><mtext mathvariant="italic">identifier</mtext></mtd>
+          <mtd><mtext mathvariant="normal">::=</mtext></mtd>
+          <mtd>
+            <mtext mathvariant="normal">/[A-Z_a-z][0-9A-Z_a-z]*/</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd><mtext mathvariant="italic">integer</mtext></mtd>
+          <mtd><mtext mathvariant="normal">::=</mtext></mtd>
+          <mtd>
+            <mtext mathvariant="normal">/[+-]?[0-9]+/</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd><mtext mathvariant="italic">rational</mtext></mtd>
+          <mtd><mtext mathvariant="normal">::=</mtext></mtd>
+          <mtd>
+            <mtext mathvariant="normal">/[+-]?[0-9]+\.[0-9]+/</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd><mtext mathvariant="italic">string</mtext></mtd>
+          <mtd><mtext mathvariant="normal">::=</mtext></mtd>
+          <mtd>
+            <mtext mathvariant="normal">/&quot;([^&quot;\\]|\\&quot;|\\\\)*&quot;/</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd><mtext mathvariant="italic">binary</mtext></mtd>
+          <mtd><mtext mathvariant="normal">::=</mtext></mtd>
+          <mtd>
+            <mtext mathvariant="normal">/#(\s|[a-fA-F0-9])*#/</mtext>
+          </mtd>
+        </mtr>
+      </mtable>
+    </math>
+
+    <math display="block">
+      <mtable columnalign="left left left">
+        <mtr>
+          <mtd><mtext mathvariant="italic">lexeme</mtext></mtd>
+          <mtd><mtext mathvariant="normal">::=</mtext></mtd>
+          <mtd><mtext mathvariant="italic">identifier</mtext></mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd><mtext mathvariant="italic">integer</mtext></mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd><mtext mathvariant="italic">rational</mtext></mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd><mtext mathvariant="italic">string</mtext></mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd><mtext mathvariant="italic">binary</mtext></mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd><mtext class="monospace">!</mtext></mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd><mtext class="monospace">!=</mtext></mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd><mtext class="monospace">%</mtext></mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd><mtext class="monospace">&amp;</mtext></mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd><mtext class="monospace">&amp;&amp;</mtext></mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd><mtext class="monospace">(</mtext></mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd><mtext class="monospace">)</mtext></mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd><mtext class="monospace">*</mtext></mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd><mtext class="monospace">+</mtext></mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd><mtext class="monospace">,</mtext></mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd><mtext class="monospace">-</mtext></mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd><mtext class="monospace">-&gt;</mtext></mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd><mtext class="monospace">.</mtext></mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd><mtext class="monospace">..</mtext></mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd><mtext class="monospace">/</mtext></mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd><mtext class="monospace">:</mtext></mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd><mtext class="monospace">::</mtext></mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd><mtext class="monospace">:=</mtext></mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd><mtext class="monospace">;</mtext></mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd><mtext class="monospace">&lt;</mtext></mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd><mtext class="monospace">&lt;:</mtext></mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd><mtext class="monospace">&lt;=</mtext></mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd><mtext class="monospace">==</mtext></mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd><mtext class="monospace">=&gt;</mtext></mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd><mtext class="monospace">&gt;</mtext></mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd><mtext class="monospace">&gt;=</mtext></mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd><mtext class="monospace">?</mtext></mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd><mtext class="monospace">^</mtext></mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd><mtext class="monospace">false</mtext></mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd><mtext class="monospace">forall</mtext></mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd><mtext class="monospace">def</mtext></mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd><mtext class="monospace">do</mtext></mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd><mtext class="monospace">else</mtext></mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd><mtext class="monospace">end</mtext></mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd><mtext class="monospace">exists</mtext></mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd><mtext class="monospace">family</mtext></mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd><mtext class="monospace">for</mtext></mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd><mtext class="monospace">if</mtext></mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd><mtext class="monospace">in</mtext></mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd><mtext class="monospace">inductive</mtext></mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd><mtext class="monospace">let</mtext></mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd><mtext class="monospace">match</mtext></mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd><mtext class="monospace">of</mtext></mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd><mtext class="monospace">struct</mtext></mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd><mtext class="monospace">then</mtext></mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd><mtext class="monospace">true</mtext></mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd><mtext class="monospace">type</mtext></mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd><mtext class="monospace">with</mtext></mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd><mtext class="monospace">where</mtext></mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd><mtext class="monospace">[</mtext></mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd><mtext class="monospace">]</mtext></mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd><mtext class="monospace">{</mtext></mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd><mtext class="monospace">|</mtext></mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd><mtext class="monospace">||</mtext></mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd><mtext class="monospace">}</mtext></mtd>
+        </mtr>
+      </mtable>
+    </math>
+  </section>
+
+  <section id="grammar">
+    <h2>Grammar</h2>
+
+    <math display="block">
+      <mtable columnalign="left left left">
+        <mtr>
+          <mtd><mtext mathvariant="italic">qualified-identifier</mtext></mtd>
+          <mtd><mtext mathvariant="normal">::=</mtext></mtd>
+          <mtd>
+            <mtext mathvariant="italic">identifier</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext mathvariant="italic">qualified-identifier</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">.</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">identifier</mtext>
+          </mtd>
+        </mtr>
+      </mtable>
+    </math>
+
+    <math display="block">
+      <mtable columnalign="left left left">
+        <mtr>
+          <mtd><mtext mathvariant="italic">atomic-kind-expression</mtext></mtd>
+          <mtd><mtext mathvariant="normal">::=</mtext></mtd>
+          <mtd>
+            <mtext class="monospace">type</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext class="monospace">+</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">type</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext class="monospace">-</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">type</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext class="monospace">(</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">kind-expression</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">)</mtext>
+          </mtd>
+        </mtr>
+      </mtable>
+    </math>
+
+    <math display="block">
+      <mtable columnalign="left left left">
+        <mtr>
+          <mtd><mtext mathvariant="italic">multiplicative-kind-expression</mtext></mtd>
+          <mtd><mtext mathvariant="normal">::=</mtext></mtd>
+          <mtd>
+            <mtext mathvariant="italic">atomic-kind-expression</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext mathvariant="italic">atomic-kind-expression</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">*</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">multiplicative-kind-expression</mtext>
+          </mtd>
+        </mtr>
+      </mtable>
+    </math>
+
+    <math display="block">
+      <mtable columnalign="left left left">
+        <mtr>
+          <mtd><mtext mathvariant="italic">kind-expression</mtext></mtd>
+          <mtd><mtext mathvariant="normal">::=</mtext></mtd>
+          <mtd>
+            <mtext mathvariant="italic">multiplicative-kind-expression</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext mathvariant="italic">multiplicative-kind-expression</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">-&gt;</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">kind-expression</mtext>
+          </mtd>
+        </mtr>
+      </mtable>
+    </math>
+
+    <math display="block">
+      <mtable columnalign="left left left">
+        <mtr>
+          <mtd><mtext mathvariant="italic">atomic-type-parameter</mtext></mtd>
+          <mtd><mtext mathvariant="normal">::=</mtext></mtd>
+          <mtd>
+            <mtext mathvariant="italic">identifier</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext class="monospace">(</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">type-parameters</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">)</mtext>
+          </mtd>
+        </mtr>
+      </mtable>
+    </math>
+
+    <math display="block">
+      <mtable columnalign="left left left">
+        <mtr>
+          <mtd><mtext mathvariant="italic">type-parameter</mtext></mtd>
+          <mtd><mtext mathvariant="normal">::=</mtext></mtd>
+          <mtd>
+            <mtext mathvariant="italic">atomic-type-parameter</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext mathvariant="italic">identifier</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">:</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">kind-expression</mtext>
+          </mtd>
+        </mtr>
+      </mtable>
+    </math>
+
+    <math display="block">
+      <mtable columnalign="left left left">
+        <mtr>
+          <mtd><mtext mathvariant="italic">type-parameters</mtext></mtd>
+          <mtd><mtext mathvariant="normal">::=</mtext></mtd>
+          <mtd>
+            <mtext mathvariant="italic">type-parameter</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext mathvariant="italic">type-parameter</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">,</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">type-parameters</mtext>
+          </mtd>
+        </mtr>
+      </mtable>
+    </math>
+
+    <math display="block">
+      <mtable columnalign="left left left">
+        <mtr>
+          <mtd><mtext mathvariant="italic">type-member</mtext></mtd>
+          <mtd><mtext mathvariant="normal">::=</mtext></mtd>
+          <mtd>
+            <mtext mathvariant="italic">identifier</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">:</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">type-expression</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext mathvariant="italic">identifier</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">?</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">:</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">type-expression</mtext>
+          </mtd>
+        </mtr>
+      </mtable>
+    </math>
+
+    <math display="block">
+      <mtable columnalign="left left left">
+        <mtr>
+          <mtd><mtext mathvariant="italic">type-members</mtext></mtd>
+          <mtd><mtext mathvariant="normal">::=</mtext></mtd>
+          <mtd>
+            <mtext mathvariant="italic">type-member</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext mathvariant="italic">type-member</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">,</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">type-members</mtext>
+          </mtd>
+        </mtr>
+      </mtable>
+    </math>
+
+    <math display="block">
+      <mtable columnalign="left left left">
+        <mtr>
+          <mtd><mtext mathvariant="italic">record-expression</mtext></mtd>
+          <mtd><mtext mathvariant="normal">::=</mtext></mtd>
+          <mtd>
+            <mtext class="monospace">{</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">}</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext class="monospace">{</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">type-members</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">}</mtext>
+          </mtd>
+        </mtr>
+      </mtable>
+    </math>
+
+    <math display="block">
+      <mtable columnalign="left left left">
+        <mtr>
+          <mtd><mtext mathvariant="italic">type-variant</mtext></mtd>
+          <mtd><mtext mathvariant="normal">::=</mtext></mtd>
+          <mtd>
+            <mtext mathvariant="italic">identifier</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext mathvariant="italic">identifier</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">of</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">type-expression</mtext>
+          </mtd>
+        </mtr>
+      </mtable>
+    </math>
+
+    <math display="block">
+      <mtable columnalign="left left left">
+        <mtr>
+          <mtd><mtext mathvariant="italic">type-variants</mtext></mtd>
+          <mtd><mtext mathvariant="normal">::=</mtext></mtd>
+          <mtd>
+            <mtext mathvariant="italic">type-variant</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext mathvariant="italic">type-variant</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">|</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">type-variants</mtext>
+          </mtd>
+        </mtr>
+      </mtable>
+    </math>
+
+    <math display="block">
+      <mtable columnalign="left left left">
+        <mtr>
+          <mtd><mtext mathvariant="italic">variant-expression</mtext></mtd>
+          <mtd><mtext mathvariant="normal">::=</mtext></mtd>
+          <mtd>
+            <mtext class="monospace">[</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">]</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext class="monospace">[</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">type-variants</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">]</mtext>
+          </mtd>
+        </mtr>
+      </mtable>
+    </math>
+
+    <math display="block">
+      <mtable columnalign="left left left">
+        <mtr>
+          <mtd><mtext mathvariant="italic">structure-expression</mtext></mtd>
+          <mtd><mtext mathvariant="normal">::=</mtext></mtd>
+          <mtd>
+            <mtext mathvariant="italic">record-expression</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext mathvariant="italic">variant-expression</mtext>
+          </mtd>
+        </mtr>
+      </mtable>
+    </math>
+
+    <math display="block">
+      <mtable columnalign="left left left">
+        <mtr>
+          <mtd><mtext mathvariant="italic">atomic-type-expression</mtext></mtd>
+          <mtd><mtext mathvariant="normal">::=</mtext></mtd>
+          <mtd>
+            <mtext mathvariant="italic">qualified-identifier</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext class="monospace">(</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">type-expressions</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">)</mtext>
+          </mtd>
+        </mtr>
+      </mtable>
+    </math>
+
+    <math display="block">
+      <mtable columnalign="left left left">
+        <mtr>
+          <mtd><mtext mathvariant="italic">applicative-type-expression</mtext></mtd>
+          <mtd><mtext mathvariant="normal">::=</mtext></mtd>
+          <mtd>
+            <mtext mathvariant="italic">atomic-type-expression</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext mathvariant="italic">applicative-type-expression</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">atoimc-type-expression</mtext>
+          </mtd>
+        </mtr>
+      </mtable>
+    </math>
+
+    <math display="block">
+      <mtable columnalign="left left left">
+        <mtr>
+          <mtd><mtext mathvariant="italic">reference-type-expression</mtext></mtd>
+          <mtd><mtext mathvariant="normal">::=</mtext></mtd>
+          <mtd>
+            <mtext mathvariant="italic">applicative-type-expression</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext class="monospace">&amp;</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">reference-type-expression</mtext>
+          </mtd>
+        </mtr>
+      </mtable>
+    </math>
+
+    <math display="block">
+      <mtable columnalign="left left left">
+        <mtr>
+          <mtd><mtext mathvariant="italic">effective-type-expression</mtext></mtd>
+          <mtd><mtext mathvariant="normal">::=</mtext></mtd>
+          <mtd>
+            <mtext mathvariant="italic">reference-type-expression</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext mathvariant="italic">reference-type-expression</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">!</mtext>
+          </mtd>
+        </mtr>
+      </mtable>
+    </math>
+
+    <math display="block">
+      <mtable columnalign="left left left">
+        <mtr>
+          <mtd><mtext mathvariant="italic">multiplicative-type-expression</mtext></mtd>
+          <mtd><mtext mathvariant="normal">::=</mtext></mtd>
+          <mtd>
+            <mtext mathvariant="italic">effective-type-expression</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext mathvariant="italic">effective-type-expression</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">*</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">multiplicative-type-expression</mtext>
+          </mtd>
+        </mtr>
+      </mtable>
+    </math>
+
+    <math display="block">
+      <mtable columnalign="left left left">
+        <mtr>
+          <mtd><mtext mathvariant="italic">type-expression</mtext></mtd>
+          <mtd><mtext mathvariant="normal">::=</mtext></mtd>
+          <mtd>
+            <mtext mathvariant="italic">multiplicative-type-expression</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext mathvariant="italic">multiplicative-type-expression</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">-&gt;</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">type-expression</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext class="monospace">^</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">atomic-type-parameter</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">.</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">type-expression</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext class="monospace">forall</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">atomic-type-parameter</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">.</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">type-expression</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext class="monospace">exists</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">atoimc-type-parameter</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">.</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">type-expression</mtext>
+          </mtd>
+        </mtr>
+      </mtable>
+    </math>
+
+    <math display="block">
+      <mtable columnalign="left left left">
+        <mtr>
+          <mtd><mtext mathvariant="italic">type-expressions</mtext></mtd>
+          <mtd><mtext mathvariant="normal">::=</mtext></mtd>
+          <mtd>
+            <mtext mathvariant="italic">type-expression</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext mathvariant="italic">type-expression</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">,</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">type-expressions</mtext>
+          </mtd>
+        </mtr>
+      </mtable>
+    </math>
+
+    <math display="block">
+      <mtable columnalign="left left left">
+        <mtr>
+          <mtd><mtext mathvariant="italic">type-definition</mtext></mtd>
+          <mtd><mtext mathvariant="normal">::=</mtext></mtd>
+          <mtd>
+            <mtext class="monospace">type</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">identifier</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">:=</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">type-expression</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext class="monospace">type</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">identifier</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">:</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">kind-expression</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">:=</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">type-expression</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext class="monospace">type</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">identifier</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">(</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">type-parameters</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">)</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">:=</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">type-expression</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext class="monospace">type</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">identifier</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">(</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">type-parameters</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">)</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">:</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">kind-expression</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">:=</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">type-expression</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext class="monospace">struct</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">identifier</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">:=</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">structure-expression</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext class="monospace">struct</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">identifier</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">:</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">kind-expression</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">:=</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">structure-expression</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext class="monospace">struct</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">identifier</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">(</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">type-parameters</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">)</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">:=</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">structure-expression</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext class="monospace">struct</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">identifier</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">(</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">type-parameters</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">)</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">:</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">kind-expression</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">:=</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">structure-expression</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext class="monospace">inductive</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">identifier</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">:=</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">structure-expression</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext class="monospace">inductive</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">identifier</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">:</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">kind-expression</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">:=</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">structure-expression</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext class="monospace">inductive</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">identifier</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">(</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">type-parameters</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">)</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">:=</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">structure-expression</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext class="monospace">inductive</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">identifier</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">(</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">type-parameters</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">)</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">:</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">kind-expression</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">:=</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">structure-expression</mtext>
+          </mtd>
+        </mtr>
+      </mtable>
+    </math>
+
+    <math display="block">
+      <mtable columnalign="left left left">
+        <mtr>
+          <mtd><mtext mathvariant="italic">value-parameter-member</mtext></mtd>
+          <mtd><mtext mathvariant="normal">::=</mtext></mtd>
+          <mtd>
+            <mtext mathvariant="italic">identifier</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext mathvariant="italic">identifier</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">?</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">value-expression</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext mathvariant="italic">identifier</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">?</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">value-expression</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">:</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">value-expression</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext mathvariant="italic">identifier</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">:</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">type-expression</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext mathvariant="italic">identifier</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">:</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">type-expression</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">?</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">value-expression</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext mathvariant="italic">identifier</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">:</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">type-expression</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">?</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">value-expression</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">:</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">value-expression</mtext>
+          </mtd>
+        </mtr>
+      </mtable>
+    </math>
+
+    <math display="block">
+      <mtable columnalign="left left left">
+        <mtr>
+          <mtd><mtext mathvariant="italic">value-parameter-members</mtext></mtd>
+          <mtd><mtext mathvariant="normal">::=</mtext></mtd>
+          <mtd>
+            <mtext mathvariant="italic">value-parameter-member</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext mathvariant="italic">value-parameter-member</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">,</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">value-parameter-members</mtext>
+          </mtd>
+        </mtr>
+      </mtable>
+    </math>
+
+    <math display="block">
+      <mtable columnalign="left left left">
+        <mtr>
+          <mtd><mtext mathvariant="italic">atomic-value-parameter</mtext></mtd>
+          <mtd><mtext mathvariant="normal">::=</mtext></mtd>
+          <mtd>
+            <mtext mathvariant="italic">identifier</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext class="monospace">(</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">value-parameters</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">)</mtext>
+          </mtd>
+        </mtr>
+      </mtable>
+    </math>
+
+    <math display="block">
+      <mtable columnalign="left left left">
+        <mtr>
+          <mtd><mtext mathvariant="italic">value-parameter</mtext></mtd>
+          <mtd><mtext mathvariant="normal">::=</mtext></mtd>
+          <mtd>
+            <mtext mathvariant="italic">atomic-value-parameter</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext mathvariant="italic">identifier</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">:</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">type-expression</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext mathvariant="italic">qualified-identifier</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">{</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">}</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext mathvariant="italic">qualified-identifier</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">{</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">value-parameter-members</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">}</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext class="monospace">family</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">qualified-identifier</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">atomic-value-parameter</mtext>
+          </mtd>
+        </mtr>
+      </mtable>
+    </math>
+
+    <math display="block">
+      <mtable columnalign="left left left">
+        <mtr>
+          <mtd><mtext mathvariant="italic">value-parameters</mtext></mtd>
+          <mtd><mtext mathvariant="normal">::=</mtext></mtd>
+          <mtd>
+            <mtext mathvariant="italic">value-parameter</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext mathvariant="italic">value-parameter</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">,</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">value-parameters</mtext>
+          </mtd>
+        </mtr>
+      </mtable>
+    </math>
+
+    <math display="block">
+      <mtable columnalign="left left left">
+        <mtr>
+          <mtd><mtext mathvariant="italic">value-member</mtext></mtd>
+          <mtd><mtext mathvariant="normal">::=</mtext></mtd>
+          <mtd>
+            <mtext mathvariant="italic">identifier</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext mathvariant="italic">identifier</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">:=</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">value-expression</mtext>
+          </mtd>
+        </mtr>
+      </mtable>
+    </math>
+
+    <math display="block">
+      <mtable columnalign="left left left">
+        <mtr>
+          <mtd><mtext mathvariant="italic">value-members</mtext></mtd>
+          <mtd><mtext mathvariant="normal">::=</mtext></mtd>
+          <mtd>
+            <mtext mathvariant="italic">value-member</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext mathvariant="italic">value-member</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">,</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">value-members</mtext>
+          </mtd>
+        </mtr>
+      </mtable>
+    </math>
+
+    <math display="block">
+      <mtable columnalign="left left left">
+        <mtr>
+          <mtd><mtext mathvariant="italic">value-implication</mtext></mtd>
+          <mtd><mtext mathvariant="normal">::=</mtext></mtd>
+          <mtd>
+            <mtext mathvariant="italic">identifier</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">=&gt;</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">value-expression</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext mathvariant="italic">identifier</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">atomic-value-parameter</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">=&gt;</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">value-expression</mtext>
+          </mtd>
+        </mtr>
+      </mtable>
+    </math>
+
+    <math display="block">
+      <mtable columnalign="left left left">
+        <mtr>
+          <mtd><mtext mathvariant="italic">value-implications</mtext></mtd>
+          <mtd><mtext mathvariant="normal">::=</mtext></mtd>
+          <mtd>
+            <mtext mathvariant="italic">value-implication</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext mathvariant="italic">value-implication</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">|</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">value-implications</mtext>
+          </mtd>
+        </mtr>
+      </mtable>
+    </math>
+
+    <math display="block">
+      <mtable columnalign="left left left">
+        <mtr>
+          <mtd><mtext mathvariant="italic">atomic-value-expression</mtext></mtd>
+          <mtd><mtext mathvariant="normal">::=</mtext></mtd>
+          <mtd>
+            <mtext class="monospace">false</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext class="monospace">true</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext mathvariant="italic">integer</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext mathvariant="italic">rational</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext mathvariant="italic">string</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext mathvariant="italic">binary</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext mathvariant="italic">qualified-identifier</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext mathvariant="italic">qualified-identifier</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">.</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">==</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext mathvariant="italic">qualified-identifier</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">.</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">!=</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext mathvariant="italic">qualified-identifier</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">.</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">&lt;=</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext mathvariant="italic">qualified-identifier</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">.</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">&lt;</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext mathvariant="italic">qualified-identifier</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">.</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">&gt;=</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext mathvariant="italic">qualified-identifier</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">.</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">&gt;</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext mathvariant="italic">qualified-identifier</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">.</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">+</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext mathvariant="italic">qualified-identifier</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">.</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">-</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext mathvariant="italic">qualified-identifier</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">.</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">*</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext mathvariant="italic">qualified-identifier</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">.</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">/</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext mathvariant="italic">qualified-identifier</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">.</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">%</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext mathvariant="italic">qualified-identifier</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">::</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">identifier</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext class="monospace">[</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">]</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext class="monospace">[</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">value-expressions</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">]</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext class="monospace">[</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">value-expression</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">|</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">value-parameter</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">in</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">value-expression</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">]</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext class="monospace">[</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">value-expression</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">|</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">value-parameter</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">in</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">value-expression</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">..</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">value-expression</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">]</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext class="monospace">(</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">value-expressions</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">)</mtext>
+          </mtd>
+        </mtr>
+      </mtable>
+    </math>
+
+    <math display="block">
+      <mtable columnalign="left left left">
+        <mtr>
+          <mtd><mtext mathvariant="italic">applicative-value-expression</mtext></mtd>
+          <mtd><mtext mathvariant="normal">::=</mtext></mtd>
+          <mtd>
+            <mtext mathvariant="italic">atomic-value-expression</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext mathvariant="italic">applicative-value-expression</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">atomic-value-expression</mtext>
+          </mtd>
+        </mtr>
+      </mtable>
+    </math>
+
+    <math display="block">
+      <mtable columnalign="left left left">
+        <mtr>
+          <mtd><mtext mathvariant="italic">record-value-expression</mtext></mtd>
+          <mtd><mtext mathvariant="normal">::=</mtext></mtd>
+          <mtd>
+            <mtext mathvariant="italic">applicative-value-expression</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext mathvariant="italic">qualified-identifier</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">{</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">}</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext mathvariant="italic">qualified-identifier</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">{</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">value-members</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">}</mtext>
+          </mtd>
+        </mtr>
+      </mtable>
+    </math>
+
+    <math display="block">
+      <mtable columnalign="left left left">
+        <mtr>
+          <mtd><mtext mathvariant="italic">complementary-value-expression</mtext></mtd>
+          <mtd><mtext mathvariant="normal">::=</mtext></mtd>
+          <mtd>
+            <mtext mathvariant="italic">record-value-expression</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext class="monospace">!</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">complementary-value-expression</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext class="monospace">&amp;</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">complementary-value-expression</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext class="monospace">*</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">complementary-value-expression</mtext>
+          </mtd>
+        </mtr>
+      </mtable>
+    </math>
+
+    <math display="block">
+      <mtable columnalign="left left left">
+        <mtr>
+          <mtd><mtext mathvariant="italic">multiplicative-value-expression</mtext></mtd>
+          <mtd><mtext mathvariant="normal">::=</mtext></mtd>
+          <mtd>
+            <mtext mathvariant="italic">complementary-value-expression</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext mathvariant="italic">multiplicative-value-expression</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">*</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">complementary-value-expression</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext mathvariant="italic">multiplicative-value-expression</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">/</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">complementary-value-expression</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext mathvariant="italic">multiplicative-value-expression</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">%</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">complementary-value-expression</mtext>
+          </mtd>
+        </mtr>
+      </mtable>
+    </math>
+
+    <math display="block">
+      <mtable columnalign="left left left">
+        <mtr>
+          <mtd><mtext mathvariant="italic">additive-value-expression</mtext></mtd>
+          <mtd><mtext mathvariant="normal">::=</mtext></mtd>
+          <mtd>
+            <mtext mathvariant="italic">multiplicative-value-expression</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext mathvariant="italic">additive-value-expression</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">+</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">multiplicative-value-expression</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext mathvariant="italic">additive-value-expression</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">-</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">multiplicative-value-expression</mtext>
+          </mtd>
+        </mtr>
+      </mtable>
+    </math>
+
+    <math display="block">
+      <mtable columnalign="left left left">
+        <mtr>
+          <mtd><mtext mathvariant="italic">comparative-value-expression</mtext></mtd>
+          <mtd><mtext mathvariant="normal">::=</mtext></mtd>
+          <mtd>
+            <mtext mathvariant="italic">additive-value-expression</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext mathvariant="italic">comparative-value-expression</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">==</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">additive-value-expression</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext mathvariant="italic">comparative-value-expression</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">!=</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">additive-value-expression</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext mathvariant="italic">comparative-value-expression</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">&lt;=</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">additive-value-expression</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext mathvariant="italic">comparative-value-expression</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">&lt;</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">additive-value-expression</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext mathvariant="italic">comparative-value-expression</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">&gt;=</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">additive-value-expression</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext mathvariant="italic">comparative-value-expression</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">&gt;</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">additive-value-expression</mtext>
+          </mtd>
+        </mtr>
+      </mtable>
+    </math>
+
+    <math display="block">
+      <mtable columnalign="left left left">
+        <mtr>
+          <mtd><mtext mathvariant="italic">conjunctive-value-expression</mtext></mtd>
+          <mtd><mtext mathvariant="normal">::=</mtext></mtd>
+          <mtd>
+            <mtext mathvariant="italic">comparative-value-expression</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext mathvariant="italic">conjunctive-value-expression</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">&amp;&amp;</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">comparative-value-expression</mtext>
+          </mtd>
+        </mtr>
+      </mtable>
+    </math>
+
+    <math display="block">
+      <mtable columnalign="left left left">
+        <mtr>
+          <mtd><mtext mathvariant="italic">disjunctive-value-expression</mtext></mtd>
+          <mtd><mtext mathvariant="normal">::=</mtext></mtd>
+          <mtd>
+            <mtext mathvariant="italic">conjunctive-value-expression</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext mathvariant="italic">disjunctive-value-expression</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">||</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">conjunctive-value-expression</mtext>
+          </mtd>
+        </mtr>
+      </mtable>
+    </math>
+
+    <math display="block">
+      <mtable columnalign="left left left">
+        <mtr>
+          <mtd><mtext mathvariant="italic">assignment-value-expression</mtext></mtd>
+          <mtd><mtext mathvariant="normal">::=</mtext></mtd>
+          <mtd>
+            <mtext mathvariant="italic">disjunctive-value-expression</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext mathvariant="italic">disjunctive-value-expression</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">:=</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">assignment-value-expression</mtext>
+          </mtd>
+        </mtr>
+      </mtable>
+    </math>
+
+    <math display="block">
+      <mtable columnalign="left left left">
+        <mtr>
+          <mtd><mtext mathvariant="italic">control-value-expression</mtext></mtd>
+          <mtd><mtext mathvariant="normal">::=</mtext></mtd>
+          <mtd>
+            <mtext mathvariant="italic">assignment-value-expression</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext class="monospace">match</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">value-expression</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">with</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">end</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext class="monospace">match</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">value-expression</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">with</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">value-implications</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">end</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext class="monospace">for</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">value-parameter</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">in</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">value-expression</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">do</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">value-expression</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">end</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext class="monospace">for</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">value-parameter</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">in</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">value-expression</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">..</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">value-expression</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">do</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">value-expression</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">end</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext class="monospace">for</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">value-parameter</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">in</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">value-expression</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">where</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">value-parameter</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">:=</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">value-expression</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">do</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">value-expression</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">end</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext class="monospace">for</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">value-parameter</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">in</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">value-expression</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">..</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">value-expression</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">where</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">value-parameter</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">:=</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">value-expression</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">do</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">value-expression</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">end</mtext>
+          </mtd>
+        </mtr>
+      </mtable>
+    </math>
+
+    <math display="block">
+      <mtable columnalign="left left left">
+        <mtr>
+          <mtd><mtext mathvariant="italic">value-expression</mtext></mtd>
+          <mtd><mtext mathvariant="normal">::=</mtext></mtd>
+          <mtd>
+            <mtext mathvariant="italic">control-value-expression</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext mathvariant="italic">control-value-expression</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">;</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">value-expression</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext class="monospace">^</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">atomic-value-parameter</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">.</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">value-expression</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext class="monospace">let</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">identifier</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">:=</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">value-expression</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">in</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">value-expression</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext class="monospace">if</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">value-expression</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">then</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">value-expression</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">else</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">value-expression</mtext>
+          </mtd>
+        </mtr>
+      </mtable>
+    </math>
+
+    <math display="block">
+      <mtable columnalign="left left left">
+        <mtr>
+          <mtd><mtext mathvariant="italic">value-expressions</mtext></mtd>
+          <mtd><mtext mathvariant="normal">::=</mtext></mtd>
+          <mtd>
+            <mtext mathvariant="italic">value-expression</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext mathvariant="italic">value-expression</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">,</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">value-expressions</mtext>
+          </mtd>
+        </mtr>
+      </mtable>
+    </math>
+
+    <math display="block">
+      <mtable columnalign="left left left">
+        <mtr>
+          <mtd><mtext mathvariant="italic">value-definition</mtext></mtd>
+          <mtd><mtext mathvariant="normal">::=</mtext></mtd>
+          <mtd>
+            <mtext class="monospace">def</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">identifier</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">:=</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">value-expression</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext class="monospace">def</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">identifier</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">:</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">type-expression</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">:=</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">value-expression</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext class="monospace">def</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">identifier</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">(</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">value-parameters</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">)</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">:=</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">value-expression</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext class="monospace">def</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">identifier</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">(</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">value-parameters</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">)</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">:</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">type-expression</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">:=</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">value-expression</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext class="monospace">def</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">identifier</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">[</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">type-parameters</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">]</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">:=</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">value-expression</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext class="monospace">def</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">identifier</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">[</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">type-parameters</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">]</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">:</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">type-expression</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">:=</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">value-expression</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext class="monospace">def</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">identifier</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">[</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">type-parameters</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">]</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">(</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">value-parameters</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">)</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">:=</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">value-expression</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext class="monospace">def</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">identifier</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">[</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">type-parameters</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">]</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">(</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">value-parameters</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">)</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">:</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">type-expression</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">:=</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">value-expression</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext class="monospace">def</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">identifier</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">==</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">identifier</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">:=</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">value-expression</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext class="monospace">def</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">identifier</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">!=</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">identifier</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">:=</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">value-expression</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext class="monospace">def</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">identifier</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">&lt;=</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">identifier</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">:=</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">value-expression</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext class="monospace">def</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">identifier</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">&lt;</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">identifier</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">:=</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">value-expression</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext class="monospace">def</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">identifier</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">&gt;=</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">identifier</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">:=</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">value-expression</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext class="monospace">def</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">identifier</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">&gt;</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">identifier</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">:=</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">value-expression</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext class="monospace">def</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">identifier</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">+</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">identifier</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">:=</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">value-expression</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext class="monospace">def</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">identifier</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">-</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">identifier</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">:=</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">value-expression</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext class="monospace">def</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">identifier</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">*</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">identifier</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">:=</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">value-expression</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext class="monospace">def</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">identifier</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">/</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">identifier</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">:=</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">value-expression</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext class="monospace">def</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">identifier</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">%</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">identifier</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">:=</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">value-expression</mtext>
+          </mtd>
+        </mtr>
+      </mtable>
+    </math>
+
+    <math display="block">
+      <mtable columnalign="left left left">
+        <mtr>
+          <mtd><mtext mathvariant="italic">family-expression</mtext></mtd>
+          <mtd><mtext mathvariant="normal">::=</mtext></mtd>
+          <mtd>
+            <mtext class="monospace">family</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">definitions</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">end</mtext>
+          </mtd>
+        </mtr>
+      </mtable>
+    </math>
+
+    <math display="block">
+      <mtable columnalign="left left left">
+        <mtr>
+          <mtd><mtext mathvariant="italic">family-definition</mtext></mtd>
+          <mtd><mtext mathvariant="normal">::=</mtext></mtd>
+          <mtd>
+            <mtext class="monospace">family</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">identifier</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">:=</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">family-expression</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext class="monospace">family</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">identifier</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">&lt;:</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">type-expression</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">:=</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">family-expression</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext class="monospace">family</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">identifier</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">(</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">value-parameters</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">)</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">:=</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">family-expression</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext class="monospace">family</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">identifier</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">(</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">value-parameters</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">)</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">&lt;:</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">type-expression</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">:=</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">family-expression</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext class="monospace">family</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">identifier</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">[</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">type-parameters</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">]</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">:=</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">family-expression</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext class="monospace">family</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">identifier</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">[</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">type-parameters</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">]</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">&lt;:</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">type-expression</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">:=</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">family-expression</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext class="monospace">family</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">identifier</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">[</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">type-parameters</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">]</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">(</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">value-parameters</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">)</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">:=</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">family-expression</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext class="monospace">family</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">identifier</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">[</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">type-parameters</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">]</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">(</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">value-parameters</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">)</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">&lt;:</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">type-expression</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">:=</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">family-expression</mtext>
+          </mtd>
+        </mtr>
+      </mtable>
+    </math>
+
+    <math display="block">
+      <mtable columnalign="left left left">
+        <mtr>
+          <mtd><mtext mathvariant="italic">definition</mtext></mtd>
+          <mtd><mtext mathvariant="normal">::=</mtext></mtd>
+          <mtd>
+            <mtext mathvariant="italic">type-definition</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext mathvariant="italic">value-definition</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext mathvariant="italic">family-definition</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext mathvariant="italic">type-definition</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">where</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">definition</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext mathvariant="italic">value-definition</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">where</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">definition</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext mathvariant="italic">family-definition</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">where</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">definition</mtext>
+          </mtd>
+        </mtr>
+      </mtable>
+    </math>
+
+    <math display="block">
+      <mtable columnalign="left left left">
+        <mtr>
+          <mtd><mtext mathvariant="italic">definitions</mtext></mtd>
+          <mtd><mtext mathvariant="normal">::=</mtext></mtd>
+          <mtd>
+            <mtext mathvariant="italic">definition</mtext>
+          </mtd>
+        </mtr>
+
+        <mtr>
+          <mtd></mtd>
+          <mtd><mtext mathvariant="normal">|</mtext></mtd>
+          <mtd>
+            <mtext mathvariant="italic">definition</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">definitions</mtext>
+          </mtd>
+        </mtr>
+      </mtable>
+    </math>
+
+    <math display="block">
+      <mtable columnalign="left left left">
+        <mtr>
+          <mtd><mtext mathvariant="italic">program</mtext></mtd>
+          <mtd><mtext mathvariant="normal">::=</mtext></mtd>
+          <mtd>
+            <mtext mathvariant="italic">definitions</mtext>
+          </mtd>
+        </mtr>
+      </mtable>
+    </math>
+  </section>
+
+  <section id="static-semantics">
+    <h2>Static Semantics</h2>
+
+    <section>
+      <h3>Definition of static values</h3>
+
+      <math display="block">
+        <mtable columnalign="left left left">
+          <mtr>
+            <mtd><mi>V</mi></mtd>
+            <mtd><mtext mathvariant="normal">::=</mtext></mtd>
+            <mtd>
+              <mi mathvariant="italic">identifier</mi>
+            </mtd>
+          </mtr>
+        </mtable>
+      </math>
+
+      <math display="block">
+        <mtable columnalign="left left left">
+          <mtr>
+            <mtd><mi>&kappa;</mi></mtd>
+            <mtd><mtext mathvariant="normal">::=</mtext></mtd>
+            <mtd>
+              <mi mathvariant="bold">type</mi>
+            </mtd>
+          </mtr>
+
+          <mtr>
+            <mtd></mtd>
+            <mtd><mtext mathvariant="normal">|</mtext></mtd>
+            <mtd>
+              <mi mathvariant="bold">+type</mi>
+            </mtd>
+          </mtr>
+
+          <mtr>
+            <mtd></mtd>
+            <mtd><mtext mathvariant="normal">|</mtext></mtd>
+            <mtd>
+              <mi mathvariant="bold">-type</mi>
+            </mtd>
+          </mtr>
+
+          <mtr>
+            <mtd></mtd>
+            <mtd><mtext mathvariant="normal">|</mtext></mtd>
+            <mtd>
+              <mo>(</mo>
+              <mi>&kappa;</mi>
+              <mo>&times;</mo>
+              <mi>&kappa;</mi>
+              <mo>)</mo>
+            </mtd>
+          </mtr>
+
+          <mtr>
+            <mtd></mtd>
+            <mtd><mtext mathvariant="normal">|</mtext></mtd>
+            <mtd>
+              <mo>(</mo>
+              <mi>&kappa;</mi>
+              <mo>&#x2192;</mo>
+              <mi>&kappa;</mi>
+              <mo>)</mo>
+            </mtd>
+          </mtr>
+
+          <mtr>
+            <mtd></mtd>
+            <mtd><mtext mathvariant="normal">|</mtext></mtd>
+            <mtd>
+              <mo>(</mo>
+              <mi>&kappa;</mi>
+              <mo>&#x2227;</mo>
+              <mi>&kappa;</mi>
+              <mo>)</mo>
+            </mtd>
+          </mtr>
+        </mtable>
+      </math>
+
+      <math display="block">
+        <mtable columnalign="left left left">
+          <mtr>
+            <mtd><mi>&tau;</mi></mtd>
+            <mtd><mtext mathvariant="normal">::=</mtext></mtd>
+            <mtd>
+              <mi mathvariant="bold">bool</mi>
+            </mtd>
+          </mtr>
+
+          <mtr>
+            <mtd></mtd>
+            <mtd><mtext mathvariant="normal">|</mtext></mtd>
+            <mtd>
+              <mi mathvariant="bold">int</mi>
+            </mtd>
+          </mtr>
+
+          <mtr>
+            <mtd></mtd>
+            <mtd><mtext mathvariant="normal">|</mtext></mtd>
+            <mtd>
+              <mi mathvariant="bold">rational</mi>
+            </mtd>
+          </mtr>
+
+          <mtr>
+            <mtd></mtd>
+            <mtd><mtext mathvariant="normal">|</mtext></mtd>
+            <mtd>
+              <mi mathvariant="bold">string</mi>
+            </mtd>
+          </mtr>
+
+          <mtr>
+            <mtd></mtd>
+            <mtd><mtext mathvariant="normal">|</mtext></mtd>
+            <mtd>
+              <mi mathvariant="bold">binary</mi>
+            </mtd>
+          </mtr>
+
+          <mtr>
+            <mtd></mtd>
+            <mtd><mtext mathvariant="normal">|</mtext></mtd>
+            <mtd>
+              <mo>(</mo><mi>&tau;</mi><mo>&times;</mo><mi>&tau;</mi><mo>)</mo>
+            </mtd>
+          </mtr>
+
+          <mtr>
+            <mtd></mtd>
+            <mtd><mtext mathvariant="normal">|</mtext></mtd>
+            <mtd>
+              <mo>(</mo>
+              <mi>&tau;</mi>
+              <mo>&#x2192;</mo>
+              <mi>&tau;</mi>
+              <mo>)</mo>
+            </mtd>
+          </mtr>
+
+          <mtr>
+            <mtd></mtd>
+            <mtd><mtext mathvariant="normal">|</mtext></mtd>
+            <mtd>
+              <mo>(</mo>
+              <mo>&#x2200;</mo>
+              <mi>V</mi>
+              <mo>.</mo>
+              <mi>&tau;</mi>
+              <mo>)</mo>
+            </mtd>
+          </mtr>
+
+          <mtr>
+            <mtd></mtd>
+            <mtd><mtext mathvariant="normal">|</mtext></mtd>
+            <mtd>
+              <mo>(</mo>
+              <mo>&#x2203;</mo>
+              <mi>V</mi>
+              <mo>.</mo>
+              <mi>&tau;</mi>
+              <mo>)</mo>
+            </mtd>
+          </mtr>
+        </mtable>
+      </math>
+
+      <math display="block">
+        <mtable columnalign="left left left">
+          <mtr>
+            <mtd><mi mathvariant="normal">&Gamma;</mi></mtd>
+            <mtd><mtext mathvariant="normal">::=</mtext></mtd>
+            <mtd>
+              <mo>(</mo><mi mathvariant="script">T</mi><mo>,</mo><mi mathvariant="script">V</mi><mo>,</mo><mi mathvariant="script">F</mi><mo>)</mo>
+            </mtd>
+          </mtr>
+
+          <mtr>
+            <mtd><mi>&#x3DC;</mi></mtd>
+            <mtd><mtext mathvariant="normal">::=</mtext></mtd>
+            <mtd>
+              <mo>(</mo><mo>(</mo><msub><mi>V</mi><mi>n</mi></msub><mo>)</mo><mo>,</mo><mo>(</mo><msub><mi>&tau;</mi><mi>m</mi></msub><mo>)</mo><mo>,</mo><mi>&tau;</mi><mo>,</mo><mi mathvariant="script">T</mi><mo>,</mo><mi mathvariant="script">V</mi><mo>,</mo><mi mathvariant="script">F</mi><mo>)</mo>
+            </mtd>
+          </mtr>
+        </mtable>
+      </math>
+
+      <math display="block">
+        <mtable columnalign="left left left">
+          <mtr>
+            <mtd>
+              <mi mathvariant="script">T</mi>
+            </mtd>
+            <mtd>
+              <mo>:</mo>
+            </mtd>
+            <mtd>
+              <mi>V</mi><mo>&#x2192;</mo><mi>&tau;</mi><mo>&times;</mo><mi>&kappa;</mi>
+            </mtd>
+          </mtr>
+
+          <mtr>
+            <mtd>
+              <mi mathvariant="script">V</mi>
+            </mtd>
+            <mtd>
+              <mo>:</mo>
+            </mtd>
+            <mtd>
+              <mi>V</mi><mo>&#x2192;</mo><mi>&tau;</mi>
+            </mtd>
+          </mtr>
+
+          <mtr>
+            <mtd>
+              <mi mathvariant="script">F</mi>
+            </mtd>
+            <mtd>
+              <mo>:</mo>
+            </mtd>
+            <mtd>
+              <mi>V</mi><mo>&#x2192;</mo><mi>&#x3DC;</mi>
+            </mtd>
+          </mtr>
+        </mtable>
+      </math>
+
+      <math display="block">
+        <mtable columnalign="left left left">
+          <mtr>
+            <mtd>
+              <msub><mi>&tau;</mi><mi>1</mi></msub><mo>&times;</mo><mo>&#x22EF;</mo><mo>&times;</mo><msub><mi>&tau;</mi><mi>n</mi></msub>
+            </mtd>
+            <mtd>
+              <mo>=</mo>
+            </mtd>
+            <mtd>
+              <mo>(</mo><msub><mi>&tau;</mi><mi>1</mi></msub><mo>&times;</mo><mo>(</mo><mo>&#x22EF;</mo><mo>&times;</mo><msub><mi>&tau;</mi><mi>n</mi></msub><mo>)</mo><mo>)</mo>
+            </mtd>
+          </mtr>
+
+          <mtr>
+            <mtd>
+              <mo>&#x2200;</mo>
+              <msub><mi>V</mi><mi>1</mi></msub>
+              <mo>,</mo>
+              <mo>&#x22EF;</mo>
+              <mo>,</mo>
+              <msub><mi>V</mi><mi>n</mi></msub>
+              <mo>.</mo>
+              <mi>&tau;</mi>
+            </mtd>
+            <mtd>
+              <mo>=</mo>
+            </mtd>
+              <mo>(</mo>
+              <mo>&#x2200;</mo>
+              <msub><mi>V</mi><mi>1</mi></msub>
+              <mo>.</mo>
+              <mo>&#x22EF;</mo>
+              <mo>(</mo>
+              <mo>&#x2200;</mo>
+              <msub><mi>V</mi><mi>n</mi></msub>
+              <mo>.</mo>
+              <mi>&tau;</mi>
+              <mo>)</mo>
+              <mo>)</mo>
+            <mtd>
+            </mtd>
+          </mtr>
+
+          <mtr>
+            <mtd>
+              <mo>(</mo><msub><mi>&tau;</mi><mi>0</mi></msub><mo>)</mo>
+              <mo>&#x2192;</mo>
+              <mi>&tau;</mi>
+            </mtd>
+            <mtd>
+              <mo>=</mo>
+            </mtd>
+            <mtd>
+              <mi>&tau;</mi>
+            </mtd>
+          </mtr>
+
+          <mtr>
+            <mtd>
+              <mo>(</mo><msub><mi>&tau;</mi><mi>n</mi></msub><mo>)</mo>
+              <mo>&#x2192;</mo>
+              <mi>&tau;</mi>
+            </mtd>
+            <mtd>
+              <mo>=</mo>
+            </mtd>
+            <mtd>
+              <msub><mi>&tau;</mi><mi>1</mi></msub><mo>&times;</mo><mo>&#x22EF;</mo><mo>&times;</mo><msub><mi>&tau;</mi><mi>n</mi></msub><mo>&#x2192;</mo><mi>&tau;</mi>
+            </mtd>
+          </mtr>
+
+          <mtr>
+            <mtd>
+              <mo>&#x2200;</mo>
+              <mo>(</mo><msub><mi>V</mi><mi>0</mi></msub><mo>)</mo>
+              <mo>.</mo>
+              <mi>&tau;</mi>
+            </mtd>
+            <mtd>
+              <mo>=</mo>
+            </mtd>
+            <mtd>
+              <mi>&tau;</mi>
+            </mtd>
+          </mtr>
+
+          <mtr>
+            <mtd>
+              <mo>&#x2200;</mo>
+              <mo>(</mo><msub><mi>V</mi><mi>n</mi></msub><mo>)</mo>
+              <mo>.</mo>
+              <mi>&tau;</mi>
+            </mtd>
+            <mtd>
+              <mo>=</mo>
+            </mtd>
+            <mtd>
+              <mo>&#x2200;</mo>
+              <msub><mi>V</mi><mi>1</mi></msub>
+              <mo>,</mo>
+              <mo>&#x22EF;</mo>
+              <mo>,</mo>
+              <msub><mi>V</mi><mi>n</mi></msub>
+              <mo>.</mo>
+              <mi>&tau;</mi>
+            </mtd>
+          </mtr>
+        </mtable>
+      </math>
+    </section>
+
+    <section>
+      <h3>Rules for static values</h3>
+
+      <math display="block">
+        <mfrac>
+          <mrow>
+          </mrow>
+          <mrow>
+            <mi>&kappa;</mi>
+            <mo>&#x2264;</mo>
+            <mi>&kappa;</mi>
+          </mrow>
+        </mfrac>
+      </math>
+
+      <math display="block">
+        <mfrac>
+          <mrow>
+            <msub><mi>&kappa;</mi><mn>1</mn></msub>
+            <mo>&#x2264;</mo>
+            <msub><mi>&kappa;</mi><mn>2</mn></msub>
+            &emsp;
+            <msub><mi>&kappa;</mi><mn>2</mn></msub>
+            <mo>&#x2264;</mo>
+            <msub><mi>&kappa;</mi><mn>3</mn></msub>
+          </mrow>
+          <mrow>
+            <msub><mi>&kappa;</mi><mn>1</mn></msub>
+            <mo>&#x2264;</mo>
+            <msub><mi>&kappa;</mi><mn>3</mn></msub>
+          </mrow>
+        </mfrac>
+      </math>
+
+      <math display="block">
+        <mfrac>
+          <mrow>
+          </mrow>
+          <mrow>
+            <mi mathvariant="bold">type</mi>
+            <mo>&#x2264;</mo>
+            <mi mathvariant="bold">type</mi>
+          </mrow>
+        </mfrac>
+      </math>
+
+      <math display="block">
+        <mfrac>
+          <mrow>
+          </mrow>
+          <mrow>
+            <mi mathvariant="bold">type</mi>
+            <mo>&#x2264;</mo>
+            <mi mathvariant="bold">+type</mi>
+          </mrow>
+        </mfrac>
+      </math>
+
+      <math display="block">
+        <mfrac>
+          <mrow>
+          </mrow>
+          <mrow>
+            <mi mathvariant="bold">type</mi>
+            <mo>&#x2264;</mo>
+            <mi mathvariant="bold">-type</mi>
+          </mrow>
+        </mfrac>
+      </math>
+    </section>
+
+    <section>
+      <h3>Rules for <math><mtext mathvariant="italic">qualified-identifier</mtext></math></h3>
+
+      <math display="block">
+        <mfrac>
+          <mrow>
+            <mi mathvariant="normal">&Gamma;</mi>
+            <mo>=</mo>
+            <mo>(</mo><mi mathvariant="script">T</mi><mo>,</mo>
+            <mi mathvariant="script">V</mi><mo>,</mo>
+            <mi mathvariant="script">F</mi><mo>)</mo>
+            &emsp;
+            <mi mathvariant="script">T</mi>
+            <mo>(</mo><mtext mathvariant="italic">identifier</mtext><mo>)</mo>
+            <mo>=</mo>
+            <mo>(</mo>
+            <mi>&tau;</mi>
+            <mo>,</mo>
+            <mi>&kappa;</mi>
+            <mo>)</mo>
+          </mrow>
+          <mrow>
+            <mi mathvariant="normal">&Gamma;</mi>
+            <mo mathvariant="normal">&#x22A2;</mo>
+            <mtext mathvariant="italic">identifier</mtext>
+            <mo mathvariant="normal">&#x21D3;</mo>
+            <mo>(</mo>
+            <mi>&tau;</mi>
+            <mo>,</mo>
+            <mi>&kappa;</mi>
+            <mo>)</mo>
+          </mrow>
+        </mfrac>
+      </math>
+
+      <math display="block">
+        <mfrac>
+          <mrow>
+            <mi mathvariant="normal">&Gamma;</mi>
+            <mo>=</mo>
+            <mo>(</mo><mi mathvariant="script">T</mi><mo>,</mo>
+            <mi mathvariant="script">V</mi><mo>,</mo>
+            <mi mathvariant="script">F</mi><mo>)</mo>
+            &emsp;
+            <mi mathvariant="script">V</mi>
+            <mo>(</mo><mtext mathvariant="italic">identifier</mtext><mo>)</mo>
+            <mo>=</mo>
+            <mi>&tau;</mi>
+          </mrow>
+          <mrow>
+            <mi mathvariant="normal">&Gamma;</mi>
+            <mo mathvariant="normal">&#x22A2;</mo>
+            <mtext mathvariant="italic">identifier</mtext>
+            <mo mathvariant="normal">&#x21D3;</mo>
+            <mi>&tau;</mi>
+          </mrow>
+        </mfrac>
+      </math>
+
+      <math display="block">
+        <mfrac>
+          <mrow>
+            <mi mathvariant="normal">&Gamma;</mi>
+            <mo>=</mo>
+            <mo>(</mo><mi mathvariant="script">T</mi><mo>,</mo>
+            <mi mathvariant="script">V</mi><mo>,</mo>
+            <mi mathvariant="script">F</mi><mo>)</mo>
+            &emsp;
+            <mi mathvariant="script">F</mi>
+            <mo>(</mo><mtext mathvariant="italic">identifier</mtext><mo>)</mo>
+            <mo>=</mo>
+            <mi>&#x3DC;</mi>
+          </mrow>
+          <mrow>
+            <mi mathvariant="normal">&Gamma;</mi>
+            <mo mathvariant="normal">&#x22A2;</mo>
+            <mtext mathvariant="italic">identifier</mtext>
+            <mo mathvariant="normal">&#x21D3;</mo>
+            <mi>&#x3DC;</mi>
+          </mrow>
+        </mfrac>
+      </math>
+
+      <math display="block">
+        <mfrac>
+          <mrow>
+            <mi mathvariant="normal">&Gamma;</mi>
+            <mo mathvariant="normal">&#x22A2;</mo>
+            <mtext mathvariant="italic">qualified-identifier</mtext>
+            <mo mathvariant="normal">&#x21D3;</mo>
+            <mi>&#x3DC;</mi>
+            &emsp;
+            <mi>&#x3DC;</mi>
+            <mo>=</mo>
+            <mo>(</mo><mo>(</mo><msub><mi>V</mi><mi>n</mi></msub><mo>)</mo><mo>,</mo>
+            <mo>(</mo><msub><mi>&tau;</mi><mi>m</mi></msub><mo>)</mo><mo>,</mo>
+            <mi>&tau;</mi><mo>,</mo>
+            <mi mathvariant="script">T</mi><mo>,</mo>
+            <mi mathvariant="script">V</mi><mo>,</mo>
+            <mi mathvariant="script">F</mi><mo>)</mo>
+            &emsp;
+            </mo><mi mathvariant="script">T</mi><mo>(</mo><mtext mathvariant="italic">identifier</mtext><mo>)</mo>
+            <mo>=</mo>
+            <mo>(</mo>
+            <mi>&tau;</mi><mo>'</mo>
+            <mo>,</mo>
+            <mi>&kappa;</mi>
+            <mo>)</mo>
+          </mrow>
+          <mrow>
+            <mi mathvariant="normal">&Gamma;</mi>
+            <mo mathvariant="normal">&#x22A2;</mo>
+            <mtext mathvariant="italic">qualified-identifier</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">.</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">identifier</mtext>
+            <mo mathvariant="normal">&#x21D3;</mo>
+            <mo>(</mo>
+            <mi>&tau;</mi><mo>'</mo>
+            <mo>,</mo>
+            <mi>&kappa;</mi>
+            <mo>)</mo>
+          </mrow>
+        </mfrac>
+      </math>
+
+      <math display="block">
+        <mfrac>
+          <mrow>
+            <mi mathvariant="normal">&Gamma;</mi>
+            <mo mathvariant="normal">&#x22A2;</mo>
+            <mtext mathvariant="italic">qualified-identifier</mtext>
+            <mo mathvariant="normal">&#x21D3;</mo>
+            <mi>&#x3DC;</mi>
+            &emsp;
+            <mi>&#x3DC;</mi>
+            <mo>=</mo>
+            <mo>(</mo><mo>(</mo><msub><mi>V</mi><mi>n</mi></msub><mo>)</mo><mo>,</mo>
+            <mo>(</mo><msub><mi>&tau;</mi><mi>m</mi></msub><mo>)</mo><mo>,</mo>
+            <mi>&tau;</mi><mo>,</mo>
+            <mi mathvariant="script">T</mi><mo>,</mo>
+            <mi mathvariant="script">V</mi><mo>,</mo>
+            <mi mathvariant="script">F</mi><mo>)</mo>
+            &emsp;
+            <mi mathvariant="script">V</mi>
+            <mo>(</mo><mtext mathvariant="italic">identifier</mtext><mo>)</mo>
+            <mo>=</mo>
+            <mi>&tau;</mi><mo>'</mo>
+          </mrow>
+          <mrow>
+            <mi mathvariant="normal">&Gamma;</mi>
+            <mo mathvariant="normal">&#x22A2;</mo>
+            <mtext mathvariant="italic">qualified-identifier</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">.</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">identifier</mtext>
+            <mo mathvariant="normal">&#x21D3;</mo>
+            <mo>&#x2200;</mo>
+            <mo>(</mo><msub><mi>V</mi><mi>n</mi></msub><mo>)</mo><mo>.</mo>
+            <mo>(</mo><msub><mi>&tau;</mi><mi>m</mi></msub><mo>)</mo>
+            <mo>&#x2192;</mo>
+            <mi>&tau;</mi><mo>'</mo>
+          </mrow>
+        </mfrac>
+      </math>
+
+      <math display="block">
+        <mfrac>
+          <mrow>
+            <mi mathvariant="normal">&Gamma;</mi>
+            <mo mathvariant="normal">&#x22A2;</mo>
+            <mtext mathvariant="italic">qualified-identifier</mtext>
+            <mo mathvariant="normal">&#x21D3;</mo>
+            <mi>&#x3DC;</mi>
+            &emsp;
+            <mi>&#x3DC;</mi>
+            <mo>=</mo>
+            <mo>(</mo><mo>(</mo><msub><mi>V</mi><mi>n</mi></msub><mo>)</mo><mo>,</mo>
+            <mo>(</mo><msub><mi>&tau;</mi><mi>m</mi></msub><mo>)</mo><mo>,</mo>
+            <mi>&tau;</mi><mo>,</mo>
+            <mi mathvariant="script">T</mi><mo>,</mo>
+            <mi mathvariant="script">V</mi><mo>,</mo>
+            <mi mathvariant="script">F</mi><mo>)</mo>
+            &emsp;
+            <mi mathvariant="script">F</mi>
+            <mo>(</mo><mtext mathvariant="italic">identifier</mtext><mo>)</mo>
+            <mo>=</mo>
+            <mi>&#x3DC;</mi><mo>'</mo>
+          </mrow>
+          <mrow>
+            <mi mathvariant="normal">&Gamma;</mi>
+            <mo mathvariant="normal">&#x22A2;</mo>
+            <mtext mathvariant="italic">qualified-identifier</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">.</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">identifier</mtext>
+            <mo mathvariant="normal">&#x21D3;</mo>
+            <mi>&#x3DC;</mi><mo>'</mo>
+          </mrow>
+        </mfrac>
+      </math>
+    </section>
+
+    <section>
+      <h3>Rules for <math><mtext mathvariant="italic">atomic-kind-expression</mtext></math></h3>
+
+      <math display="block">
+        <mfrac>
+          <mrow>
+          </mrow>
+          <mrow>
+            <mi mathvariant="normal">&Gamma;</mi>
+            <mo mathvariant="normal">&#x22A2;</mo>
+            <mtext class="monospace">type</mtext>
+            <mo mathvariant="normal">&#x21D3;</mo>
+            <mi mathvariant="bold">type</mi>
+          </mrow>
+        </mfrac>
+      </math>
+
+      <math display="block">
+        <mfrac>
+          <mrow>
+          </mrow>
+          <mrow>
+            <mi mathvariant="normal">&Gamma;</mi>
+            <mo mathvariant="normal">&#x22A2;</mo>
+            <mtext class="monospace">+</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">type</mtext>
+            <mo mathvariant="normal">&#x21D3;</mo>
+            <mi mathvariant="bold">+type</mi>
+          </mrow>
+        </mfrac>
+      </math>
+
+      <math display="block">
+        <mfrac>
+          <mrow>
+          </mrow>
+          <mrow>
+            <mi mathvariant="normal">&Gamma;</mi>
+            <mo mathvariant="normal">&#x22A2;</mo>
+            <mtext class="monospace">-</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">type</mtext>
+            <mo mathvariant="normal">&#x21D3;</mo>
+            <mi mathvariant="bold">-type</mi>
+          </mrow>
+        </mfrac>
+      </math>
+
+      <math display="block">
+        <mfrac>
+          <mrow>
+            <mi mathvariant="normal">&Gamma;</mi>
+            <mo mathvariant="normal">&#x22A2;</mo>
+            <mtext mathvariant="italic">kind-expression</mtext>
+            <mo mathvariant="normal">&#x21D3;</mo>
+            <mi>&kappa;</mi>
+          </mrow>
+          <mrow>
+            <mi mathvariant="normal">&Gamma;</mi>
+            <mo mathvariant="normal">&#x22A2;</mo>
+            <mtext class="monospace">(</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">kind-expression</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">)</mtext>
+            <mo mathvariant="normal">&#x21D3;</mo>
+            <mi>&kappa;</mi>
+          </mrow>
+        </mfrac>
+      </math>
+    </section>
+
+    <section>
+      <h3>Rules for <math><mtext mathvariant="italic">multiplicative-kind-expression</mtext></math></h3>
+
+      <math display="block">
+        <mfrac>
+          <mrow>
+            <mi mathvariant="normal">&Gamma;</mi>
+            <mo mathvariant="normal">&#x22A2;</mo>
+            <mtext mathvariant="italic">atomic-kind-expression</mtext>
+            <mo mathvariant="normal">&#x21D3;</mo>
+            <mi>&kappa;</mi>
+          </mrow>
+          <mrow>
+            <mi mathvariant="normal">&Gamma;</mi>
+            <mo mathvariant="normal">&#x22A2;</mo>
+            <mtext mathvariant="italic">atomic-kind-expression</mtext>
+            <mo mathvariant="normal">&#x21D3;</mo>
+            <mi>&kappa;</mi>
+          </mrow>
+        </mfrac>
+      </math>
+
+      <math display="block">
+        <mfrac>
+          <mrow>
+            <mi mathvariant="normal">&Gamma;</mi>
+            <mo mathvariant="normal">&#x22A2;</mo>
+            <mtext mathvariant="italic">atomic-kind-expression</mtext>
+            <mo mathvariant="normal">&#x21D3;</mo>
+            <msub><mi>&kappa;</mi><mn>1</mn></msub>
+            &emsp;
+            <mi mathvariant="normal">&Gamma;</mi>
+            <mo mathvariant="normal">&#x22A2;</mo>
+            <mtext mathvariant="italic">multiplicative-kind-expression</mtext>
+            <mo mathvariant="normal">&#x21D3;</mo>
+            <msub><mi>&kappa;</mi><mn>2</mn></msub>
+          </mrow>
+          <mrow>
+            <mi mathvariant="normal">&Gamma;</mi>
+            <mo mathvariant="normal">&#x22A2;</mo>
+            <mtext mathvariant="italic">atomic-kind-expression</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">*</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">multiplicative-kind-expression</mtext>
+            <mo mathvariant="normal">&#x21D3;</mo>
+            <mo>(</mo>
+            <msub><mi>&kappa;</mi><mn>1</mn></msub>
+            <mo>&times;</mo>
+            <msub><mi>&kappa;</mi><mn>2</mn></msub>
+            <mo>)</mo>
+          </mrow>
+        </mfrac>
+      </math>
+    </section>
+
+    <section>
+      <h3>Rules for <math><mtext mathvariant="italic">kind-expression</mtext></math></h3>
+
+      <math display="block">
+        <mfrac>
+          <mrow>
+            <mi mathvariant="normal">&Gamma;</mi>
+            <mo mathvariant="normal">&#x22A2;</mo>
+            <mtext mathvariant="italic">multiplicative-kind-expression</mtext>
+            <mo mathvariant="normal">&#x21D3;</mo>
+            <mi>&kappa;</mi>
+          </mrow>
+          <mrow>
+            <mi mathvariant="normal">&Gamma;</mi>
+            <mo mathvariant="normal">&#x22A2;</mo>
+            <mtext mathvariant="italic">multiplicative-kind-expression</mtext>
+            <mo mathvariant="normal">&#x21D3;</mo>
+            <mi>&kappa;</mi>
+          </mrow>
+        </mfrac>
+      </math>
+
+      <math display="block">
+        <mfrac>
+          <mrow>
+            <mi mathvariant="normal">&Gamma;</mi>
+            <mo mathvariant="normal">&#x22A2;</mo>
+            <mtext mathvariant="italic">multiplicative-kind-expression</mtext>
+            <mo mathvariant="normal">&#x21D3;</mo>
+            <msub><mi>&kappa;</mi><mn>1</mn></msub>
+            &emsp;
+            <mi mathvariant="normal">&Gamma;</mi>
+            <mo mathvariant="normal">&#x22A2;</mo>
+            <mtext mathvariant="italic">kind-expression</mtext>
+            <mo mathvariant="normal">&#x21D3;</mo>
+            <msub><mi>&kappa;</mi><mn>2</mn></msub>
+          </mrow>
+          <mrow>
+            <mi mathvariant="normal">&Gamma;</mi>
+            <mo mathvariant="normal">&#x22A2;</mo>
+            <mtext mathvariant="italic">multiplicative-kind-expression</mtext>
+            <mspace width="0.5em" />
+            <mtext class="monospace">-&gt;</mtext>
+            <mspace width="0.5em" />
+            <mtext mathvariant="italic">kind-expression</mtext>
+            <mo mathvariant="normal">&#x21D3;</mo>
+            <mo>(</mo>
+            <msub><mi>&kappa;</mi><mn>1</mn></msub>
+            <mo>&#x2192;</mo>
+            <msub><mi>&kappa;</mi><mn>2</mn></msub>
+            <mo>)</mo>
+          </mrow>
+        </mfrac>
+      </math>
+    </section>
+
+    <section>
+      <h3>Rules for <math><mtext mathvariant="italic">atomic-value-expression</mtext></math></h3>
+
+      <math display="block">
+        <mfrac>
+          <mrow>
+          </mrow>
+          <mrow>
+            <mtext mathvariant="normal">&Gamma;</mtext>
+            <mo mathvariant="normal">&#x22A2;</mo>
+            <mtext class="monospace">false</mtext>
+            <mspace width="0.25em" />
+            <mo>:</mo>
+            <mspace width="0.25em" />
+            <mi mathvariant="bold">bool</mi>
+          </mrow>
+        </mfrac>
+      </math>
+
+      <math display="block">
+        <mfrac>
+          <mrow>
+          </mrow>
+          <mrow>
+            <mtext mathvariant="normal">&Gamma;</mtext>
+            <mo mathvariant="normal">&#x22A2;</mo>
+            <mtext class="monospace">true</mtext>
+            <mspace width="0.25em" />
+            <mo>:</mo>
+            <mspace width="0.25em" />
+            <mi mathvariant="bold">bool</mi>
+          </mrow>
+        </mfrac>
+      </math>
+
+      <math display="block">
+        <mfrac>
+          <mrow>
+          </mrow>
+          <mrow>
+            <mtext mathvariant="normal">&Gamma;</mtext>
+            <mo mathvariant="normal">&#x22A2;</mo>
+            <mtext mathvariant="italic">integer</mtext>
+            <mspace width="0.25em" />
+            <mo>:</mo>
+            <mspace width="0.25em" />
+            <mi mathvariant="bold">int</mi>
+          </mrow>
+        </mfrac>
+      </math>
+
+      <math display="block">
+        <mfrac>
+          <mrow>
+          </mrow>
+          <mrow>
+            <mtext mathvariant="normal">&Gamma;</mtext>
+            <mo mathvariant="normal">&#x22A2;</mo>
+            <mtext mathvariant="italic">rational</mtext>
+            <mspace width="0.25em" />
+            <mo>:</mo>
+            <mspace width="0.25em" />
+            <mi mathvariant="bold">rational</mi>
+          </mrow>
+        </mfrac>
+      </math>
+
+      <math display="block">
+        <mfrac>
+          <mrow>
+          </mrow>
+          <mrow>
+            <mtext mathvariant="normal">&Gamma;</mtext>
+            <mo mathvariant="normal">&#x22A2;</mo>
+            <mtext mathvariant="italic">string</mtext>
+            <mspace width="0.25em" />
+            <mo>:</mo>
+            <mspace width="0.25em" />
+            <mi mathvariant="bold">string</mi>
+          </mrow>
+        </mfrac>
+      </math>
+
+      <math display="block">
+        <mfrac>
+          <mrow>
+          </mrow>
+          <mrow>
+            <mtext mathvariant="normal">&Gamma;</mtext>
+            <mo mathvariant="normal">&#x22A2;</mo>
+            <mtext mathvariant="italic">binary</mtext>
+            <mspace width="0.25em" />
+            <mo>:</mo>
+            <mspace width="0.25em" />
+            <mi mathvariant="bold">binary</mi>
+          </mrow>
+        </mfrac>
+      </math>
+
+      <math display="block">
+        <mfrac>
+          <mrow>
+            <mi mathvariant="normal">&Gamma;</mi>
+            <mo mathvariant="normal">&#x22A2;</mo>
+            <mtext mathvariant="italic">qualified-identifier</mtext>
+            <mo mathvariant="normal">&#x21D3;</mo>
+            <mi>&tau;</mi>
+          </mrow>
+          <mrow>
+            <mtext mathvariant="normal">&Gamma;</mtext>
+            <mo mathvariant="normal">&#x22A2;</mo>
+            <mtext mathvariant="italic">qualified-identifier</mtext>
+            <mspace width="0.25em" />
+            <mo>:</mo>
+            <mspace width="0.25em" />
+            <mi>&tau;</mi>
+          </mrow>
+        </mfrac>
+      </math>
+    </section>
+  </section>
+</article>
