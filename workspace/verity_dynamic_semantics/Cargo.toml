@@ -1,6 +1,6 @@
 [package]
 name = "verity_dynamic_semantics"
-version = "0.1.1"
+version = "0.1.2"
 
 [dependencies]
 verity_definition = { path = "../verity_definition" }

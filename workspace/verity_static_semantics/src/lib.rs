@@ -4101,10 +4101,10 @@ impl Verifier {
                 if let Some(family_type) = &family_value.family_type {
                     if let Some(subst) = &subst {
                         let family_type_value =
-                            substitution::substitute(subst, &self.ascribe_type(&family_type));
+                            substitution::substitute(subst, &self.instantiate_type(&family_type));
                         unify(location, &type_value, &family_type_value)?;
                     } else {
-                        let family_type_value = self.ascribe_type(family_type);
+                        let family_type_value = self.instantiate_type(family_type);
                         unify(location, &type_value, &family_type_value)?;
                     };
                 } else {

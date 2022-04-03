@@ -21,3 +21,6 @@ family X <: exists t. T(t) := family
 end
 
 def x_array : array X := [X::int, X::rational, X::int_string_pair]
+
+def next_all(x_array) :=
+  [ T { state := next state, next := next } | family X(T { state, next }) in x_array ]

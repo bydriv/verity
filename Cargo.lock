@@ -661,7 +661,7 @@ checksum = "936e4b492acfd135421d8dca4b1aa80a7bfc26e702ef3af710e0752684df5372"
 
 [[package]]
 name = "verity"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "rustyline",
  "verity_definition",
@@ -672,7 +672,7 @@ dependencies = [
 
 [[package]]
 name = "verity_definition"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "num-bigint",
  "num-rational",
@@ -680,7 +680,7 @@ dependencies = [
 
 [[package]]
 name = "verity_dynamic_semantics"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "num-bigint",
  "num-rational",
@@ -689,7 +689,7 @@ dependencies = [
 
 [[package]]
 name = "verity_static_semantics"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "rand",
  "verity_definition",
@@ -697,7 +697,7 @@ dependencies = [
 
 [[package]]
 name = "verity_syntax"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "lalrpop",
  "lalrpop-util",
