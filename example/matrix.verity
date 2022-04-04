@@ -1,0 +1,57 @@
+family mat3 := family
+  type scalar := rational
+
+  struct t := {
+    x00 : scalar, x01 : scalar, x02 : scalar,
+    x10 : scalar, x11 : scalar, x12 : scalar,
+    x20 : scalar, x21 : scalar, x22 : scalar
+  }
+
+  family S := family
+    def a + b := Rational.+(a, b)
+    def a * b := Rational.*(a, b)
+  end
+
+  def new(
+    x00, x01, x02,
+    x10, x11, x12,
+    x20, x21, x22
+  ) :=
+    t {
+      x00, x01, x02,
+      x10, x11, x12,
+      x20, x21, x22
+    }
+
+  def A + B :=
+    let x00 := S.+(t.x00 A, t.x00 B) in
+    let x01 := S.+(t.x01 A, t.x01 B) in
+    let x02 := S.+(t.x02 A, t.x02 B) in
+    let x10 := S.+(t.x10 A, t.x10 B) in
+    let x11 := S.+(t.x11 A, t.x11 B) in
+    let x12 := S.+(t.x12 A, t.x12 B) in
+    let x20 := S.+(t.x20 A, t.x20 B) in
+    let x21 := S.+(t.x21 A, t.x21 B) in
+    let x22 := S.+(t.x22 A, t.x22 B) in
+      t {
+        x00, x01, x02,
+        x10, x11, x12,
+        x20, x21, x22
+      }
+
+  def A * B :=
+    let x00 := S.+(S.+(S.*(t.x00 A, t.x00 B), S.*(t.x01 A, t.x10 B)), S.*(t.x02 A, t.x20 B)) in
+    let x01 := S.+(S.+(S.*(t.x00 A, t.x01 B), S.*(t.x01 A, t.x11 B)), S.*(t.x02 A, t.x21 B)) in
+    let x02 := S.+(S.+(S.*(t.x00 A, t.x02 B), S.*(t.x01 A, t.x12 B)), S.*(t.x02 A, t.x22 B)) in
+    let x10 := S.+(S.+(S.*(t.x10 A, t.x00 B), S.*(t.x11 A, t.x10 B)), S.*(t.x12 A, t.x20 B)) in
+    let x11 := S.+(S.+(S.*(t.x10 A, t.x01 B), S.*(t.x11 A, t.x11 B)), S.*(t.x12 A, t.x21 B)) in
+    let x12 := S.+(S.+(S.*(t.x10 A, t.x02 B), S.*(t.x11 A, t.x12 B)), S.*(t.x12 A, t.x22 B)) in
+    let x20 := S.+(S.+(S.*(t.x20 A, t.x00 B), S.*(t.x21 A, t.x10 B)), S.*(t.x22 A, t.x20 B)) in
+    let x21 := S.+(S.+(S.*(t.x20 A, t.x01 B), S.*(t.x21 A, t.x11 B)), S.*(t.x22 A, t.x21 B)) in
+    let x22 := S.+(S.+(S.*(t.x20 A, t.x02 B), S.*(t.x21 A, t.x12 B)), S.*(t.x22 A, t.x22 B)) in
+      t {
+        x00, x01, x02,
+        x10, x11, x12,
+        x20, x21, x22
+      }
+end
