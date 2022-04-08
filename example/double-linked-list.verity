@@ -1,0 +1,20 @@
+family double_linked_list := family
+  inductive node(a) := [ nil | cell of cell a ]
+    where inductive cell(a) := { left : &node a, value : a, right : &node a }
+
+  struct t(a) := { length : int, cursor_at : int, cursor : &node a }
+
+  def tabulate[a](n : int, f : int -> a) : t a! :=
+    for i in 0..n where t {length, cursor_at, cursor} := t { length := 0, cursor_at := 0, cursor := &node.nil } do
+      let x := f(i) in
+      let cell1 := cell { left := &node.nil, value := x, right := &node.nil } in
+        cell.right cell1 := *cursor;
+        node.match *cursor with
+          nil =>
+            true
+        | cell cell2 =>
+            cell.left cell2 := node.cell cell1
+        end;
+        t { length := length + 1, cursor_at := cursor_at, cursor := &node.cell cell1 }
+    end
+end
